@@ -1,0 +1,52 @@
+[
+    {
+        "model": "pharmacy.category",
+        "pk": 1,
+        "fields": {
+            "name": "Medicine",
+            "description": "All types of medicines including tablets and syrups",
+            "created_at": "2026-01-01T10:00:00Z",
+            "updated_at": "2026-01-01T10:00:00Z"
+        }
+    },
+    {
+        "model": "pharmacy.category",
+        "pk": 2,
+        "fields": {
+            "name": "Medical Equipment",
+            "description": "Devices and tools used in healthcare",
+            "created_at": "2026-01-02T10:00:00Z",
+            "updated_at": "2026-01-02T10:00:00Z"
+        }
+    },
+    {
+        "model": "pharmacy.category",
+        "pk": 3,
+        "fields": {
+            "name": "Supplements",
+            "description": "Vitamins and dietary supplements",
+            "created_at": "2026-01-03T10:00:00Z",
+            "updated_at": "2026-01-03T10:00:00Z"
+        }
+    },
+    {
+        "model": "pharmacy.category",
+        "pk": 4,
+        "fields": {
+            "name": "Personal Care",
+            "description": "Hygiene and personal care products",
+            "created_at": "2026-01-04T10:00:00Z",
+            "updated_at": "2026-01-04T10:00:00Z"
+        }
+    },
+    {
+        "model": "pharmacy.category",
+        "pk": 5,
+        "fields": {
+            "name": "First Aid",
+            "description": "Basic first aid supplies and kits",
+            "created_at": "2026-01-05T10:00:00Z",
+            "updated_at": "2026-01-05T10:00:00Z"
+        }
+    }
+]

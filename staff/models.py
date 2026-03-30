@@ -1,0 +1,40 @@
+from django.db import models
+from accounts.models import CustomUser
+from core.image_validators import validate_image_file_integrity, validate_image_file_size
+from core.constants.roles import Role
+from core.constants.designations import Designations
+# Create your models here.
+class StaffProfile(models.Model):
+    """
+    This model is used to store the staff profile information.
+    """
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name="staff_profile")
+    role = models.CharField(max_length=100, choices=Role.choices, default=Role.OTHER)
+    designation = models.CharField(
+        max_length=100,
+        choices=Designations.choices,
+        default=Designations.OTHER,
+    )
+    
+    profile_picture = models.ImageField(
+        upload_to='profile_pictures/',
+        null=True,
+        blank=True,
+        validators=[validate_image_file_integrity, validate_image_file_size],
+    )
+    highest_degree = models.CharField(max_length=100, blank=True, null=True)  
+    address = models.TextField(blank=True, default="")
+    citizenship_image = models.ImageField(
+        upload_to='citizenship_images/',
+        null=True,
+        blank=True,
+        validators=[validate_image_file_integrity, validate_image_file_size],
+    )
+    field_of_study = models.CharField(max_length=100, blank=True, null=True)  
+    university = models.CharField(max_length=200, blank=True, null=True)
+    graduation_year = models.PositiveIntegerField(blank=True, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+   
+    def __str__(self):
+        return f"Profile of : {self.user.username}"
