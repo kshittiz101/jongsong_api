@@ -1,0 +1,35 @@
+[
+    {
+        "model": "home.feature",
+        "pk": 1,
+        "fields": {
+            "icon_name": "ri-store-2-line",
+            "title": "In-Store Pickup",
+            "description": "Order online and pick up at our local clinic in under 15 minutes.",
+            "created_at": "2026-03-31T00:00:00Z",
+            "updated_at": "2026-03-31T00:00:00Z"
+        }
+    },
+    {
+        "model": "home.feature",
+        "pk": 2,
+        "fields": {
+            "icon_name": "ri-route-line",
+            "title": "Home Delivery",
+            "description": "Prescription and wellness products delivered directly to your doorstep.",
+            "created_at": "2026-03-31T00:00:00Z",
+            "updated_at": "2026-03-31T00:00:00Z"
+        }
+    },
+    {
+        "model": "home.feature",
+        "pk": 3,
+        "fields": {
+            "icon_name": "ri-video-chat-line",
+            "title": "Telehealth Ready",
+            "description": "Consult with our doctors via high-quality video call from anywhere.",
+            "created_at": "2026-03-31T00:00:00Z",
+            "updated_at": "2026-03-31T00:00:00Z"
+        }
+    }
+]

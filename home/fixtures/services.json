@@ -1,0 +1,264 @@
+[
+  {
+    "model": "home.services",
+    "pk": 1,
+    "fields": {
+      "rank": 1,
+      "title": "Homecare(Nurse / caretaker / maid)",
+      "description": "Homecare services provide professional care to patients in their own homes. This includes nursing care, personal care, and companionship. Homecare services are available for patients of all ages and conditions.",
+      "icon_name": "ri-home-line",
+      "color": "primary",
+      "created_at": "2026-03-31T00:00:00Z",
+      "updated_at": "2026-03-31T00:00:00Z"
+    }
+  },
+  {
+    "model": "home.services",
+    "pk": 2,
+    "fields": {
+      "rank": 2,
+      "title": "24/7 Emergency & First Aid Service",
+      "description": "Round-the-clock emergency response and first aid services available 24 hours a day, 7 days a week, with just one phone call.",
+      "icon_name": "ri-hospital-line",
+      "color": "danger",
+      "created_at": "2026-03-31T00:00:00Z",
+      "updated_at": "2026-03-31T00:00:00Z"
+    }
+  },
+  {
+    "model": "home.services",
+    "pk": 3,
+    "fields": {
+      "rank": 3,
+      "title": "Wound Dressing (Small, Medium, Large)",
+      "description": "Professional wound care and dressing services for minor to major wounds, ensuring proper healing and infection prevention.",
+      "icon_name": "ri-heart-pulse-line",
+      "color": "warning",
+      "created_at": "2026-03-31T00:00:00Z",
+      "updated_at": "2026-03-31T00:00:00Z"
+    }
+  }
+  ,
+  {
+    "model": "home.services",
+    "pk": 4,
+    "fields": {
+      "rank": 4,
+      "title": "Pharmacy Dispensary",
+      "description": "Complete pharmacy services providing prescribed medicines, over-the-counter drugs, and essential medical supplies with professional guidance.",
+      "icon_name": "ri-capsule-line",
+      "color": "primary",
+      "created_at": "2026-03-31T00:00:00Z",
+      "updated_at": "2026-03-31T00:00:00Z"
+    }
+  },
+  {
+    "model": "home.services",
+    "pk": 5,
+    "fields": {
+      "rank": 5,
+      "title": "Blood Sample Collection (All Tests)",
+      "description": "Professional blood sample collection services for all types of laboratory investigations conducted safely and hygienically.",
+      "icon_name": "ri-drop-line",
+      "color": "danger",
+      "created_at": "2026-03-31T00:00:00Z",
+      "updated_at": "2026-03-31T00:00:00Z"
+    }
+  },
+  {
+    "model": "home.services",
+    "pk": 6,
+    "fields": {
+      "rank": 6,
+      "title": "Intravenous Injection / Infusion",
+      "description": "Safe administration of intravenous injections and infusions for all types of prescribed medications.",
+      "icon_name": "ri-syringe-line",
+      "color": "info",
+      "created_at": "2026-03-31T00:00:00Z",
+      "updated_at": "2026-03-31T00:00:00Z"
+    }
+  },
+  {
+    "model": "home.services",
+    "pk": 7,
+    "fields": {
+      "rank": 7,
+      "title": "Surgical Goods Supply",
+      "description": "Supply of high-quality surgical goods and medical equipment required for procedures, home care, and emergency use.",
+      "icon_name": "ri-flask-line",
+      "color": "secondary",
+      "created_at": "2026-03-31T00:00:00Z",
+      "updated_at": "2026-03-31T00:00:00Z"
+    }
+  },
+  {
+    "model": "home.services",
+    "pk": 8,
+    "fields": {
+      "rank": 8,
+      "title": "Doctor Consultation (MBBS, BDS, Specialists)",
+      "description": "Consultation with qualified doctors and specialists in various medical fields. Prior appointment is required for consultation services.",
+      "icon_name": "ri-shield-check-line",
+      "color": "primary",
+      "created_at": "2026-03-31T00:00:00Z",
+      "updated_at": "2026-03-31T00:00:00Z"
+    }
+  },
+  {
+    "model": "home.services",
+    "pk": 9,
+    "fields": {
+      "rank": 9,
+      "title": "Single-Bedded Observation Service",
+      "description": "Single-bed observation facility for short-term monitoring and medical supervision of patients.",
+      "icon_name": "ri-bed-line",
+      "color": "primary",
+      "created_at": "2026-03-31T00:00:00Z",
+      "updated_at": "2026-03-31T00:00:00Z"
+    }
+  },
+  {
+    "model": "home.services",
+    "pk": 10,
+    "fields": {
+      "rank": 10,
+      "title": "Cannulation",
+      "description": "Professional IV cannulation procedure performed by trained medical staff for medication and fluid administration.",
+      "icon_name": "ri-syringe-line",
+      "color": "primary",
+      "created_at": "2026-03-31T00:00:00Z",
+      "updated_at": "2026-03-31T00:00:00Z"
+    }
+  },
+  {
+    "model": "home.services",
+    "pk": 11,
+    "fields": {
+      "rank": 11,
+      "title": "Intradermal / Intramuscular / Subcutaneous Injection",
+      "description": "Administration of intradermal, intramuscular, and subcutaneous injections following proper medical protocols.",
+      "icon_name": "ri-syringe-line",
+      "color": "secondary",
+      "created_at": "2026-03-31T00:00:00Z",
+      "updated_at": "2026-03-31T00:00:00Z"
+    }
+  },
+  {
+    "model": "home.services",
+    "pk": 12,
+    "fields": {
+      "rank": 12,
+      "title": "Catheterization (Foley’s Male/Female)",
+      "description": "Safe and sterile Foley catheter insertion procedure for both male and female patients.",
+      "icon_name": "ri-drop-line",
+      "color": "warning",
+      "created_at": "2026-03-31T00:00:00Z",
+      "updated_at": "2026-03-31T00:00:00Z"
+    }
+  },
+  {
+    "model": "home.services",
+    "pk": 13,
+    "fields": {
+      "rank": 13,
+      "title": "NG Tube / OG Tube Insertion",
+      "description": "Nasogastric (NG) and Orogastric (OG) tube insertion procedures performed by trained professionals.",
+      "icon_name": "ri-arrow-left-right-line",
+      "color": "info",
+      "created_at": "2026-03-31T00:00:00Z",
+      "updated_at": "2026-03-31T00:00:00Z"
+    }
+  },
+  {
+    "model": "home.services",
+    "pk": 14,
+    "fields": {
+      "rank": 14,
+      "title": "Easy Bag Procedure (Constipation Relief)",
+      "description": "Medical assistance for constipation relief through safe and hygienic easy bag procedure.",
+      "icon_name": "ri-information-line",
+      "color": "secondary",
+      "created_at": "2026-03-31T00:00:00Z",
+      "updated_at": "2026-03-31T00:00:00Z"
+    }
+  },
+  {
+    "model": "home.services",
+    "pk": 15,
+    "fields": {
+      "rank": 15,
+      "title": "Arterial Blood Gas (ABG) Collection",
+      "description": "Accurate arterial blood gas sample collection for critical diagnostic evaluation.",
+      "icon_name": "ri-drop-line",
+      "color": "danger",
+      "created_at": "2026-03-31T00:00:00Z",
+      "updated_at": "2026-03-31T00:00:00Z"
+    }
+  },
+  {
+    "model": "home.services",
+    "pk": 16,
+    "fields": {
+      "rank": 16,
+      "title": "Venous Blood Gas (VBG) Collection",
+      "description": "Venous blood gas sample collection for laboratory analysis and patient monitoring.",
+      "icon_name": "ri-drop-line",
+      "color": "danger",
+      "created_at": "2026-03-31T00:00:00Z",
+      "updated_at": "2026-03-31T00:00:00Z"
+    }
+  },
+  {
+    "model": "home.services",
+    "pk": 17,
+    "fields": {
+      "rank": 17,
+      "title": "Oxygen Supply",
+      "description": "Reliable oxygen cylinder supply for home care, emergency support, and medical needs.",
+      "icon_name": "ri-wind-line",
+      "color": "info",
+      "created_at": "2026-03-31T00:00:00Z",
+      "updated_at": "2026-03-31T00:00:00Z"
+    }
+  },
+  {
+    "model": "home.services",
+    "pk": 18,
+    "fields": {
+      "rank": 18,
+      "title": "Physiotherapy Services",
+      "description": "Professional physiotherapy services available by prior appointment to support recovery and rehabilitation.",
+      "icon_name": "ri-run-line",
+      "color": "secondary",
+      "created_at": "2026-03-31T00:00:00Z",
+      "updated_at": "2026-03-31T00:00:00Z"
+    }
+  },
+  {
+    "model": "home.services",
+    "pk": 19,
+    "fields": {
+      "rank": 19,
+      "title": "Ambulance Service (EMS with Paramedics)",
+      "description": "Emergency ambulance services equipped with paramedics (EMS) to provide rapid medical response and patient transport.",
+      "icon_name": "ri-bus-line",
+      "color": "danger",
+      "created_at": "2026-03-31T00:00:00Z",
+      "updated_at": "2026-03-31T00:00:00Z"
+    }
+  },
+  {
+    "model": "home.services",
+    "pk": 20,
+    "fields": {
+      "rank": 20,
+      "title": "Helicopter & Flight Rescue (HEMS)",
+      "description": "Helicopter Emergency Medical Service (HEMS) with doctor, paramedics, nurses, and full medical equipment for critical rescue missions.",
+      "icon_name": "ri-flight-takeoff-line",
+      "color": "danger",
+      "created_at": "2026-03-31T00:00:00Z",
+      "updated_at": "2026-03-31T00:00:00Z"
+    }
+  }
+]
+
