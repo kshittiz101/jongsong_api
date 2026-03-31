@@ -116,7 +116,7 @@ class StaffCreateSerializer(serializers.ModelSerializer):
         )
         StaffProfile.objects.create(
             user=user,
-            role=Role.OTHER,
+            role=Role.STAFF,
             designation=designation,
         )
         return user
@@ -129,12 +129,15 @@ class PublicUserCreateSerializer(serializers.ModelSerializer):
         style={"input_type": "password"},
         label="Confirm password",
     )
+    first_name = serializers.CharField(max_length=150, trim_whitespace=True)
+    last_name = serializers.CharField(max_length=150, trim_whitespace=True)
     email = serializers.EmailField(validators=[UniqueValidator(queryset=CustomUser.objects.all())])
     phone_number = serializers.CharField(validators=[UniqueValidator(queryset=CustomUser.objects.all())])
 
     class Meta:
         model = CustomUser
-        fields = ["email", "phone_number", "password", "password2"]
+        fields = ["id", "first_name", "last_name", "email", "phone_number", "password", "password2"]
+        read_only_fields = ["id"]
 
     def validate(self, attrs):
         password = attrs.get("password")
@@ -162,6 +165,56 @@ class PublicUserCreateSerializer(serializers.ModelSerializer):
         )
         PublicUserProfile.objects.create(user=user, role=Role.CUSTOMER)
         return user
+
+
+def serialize_auth_user(user, request=None):
+    """
+    Shape matches the frontend `UserProfile` type (role/avatar from linked profile).
+    """
+    admin = getattr(user, "admin_profile", None)
+    staff = getattr(user, "staff_profile", None)
+    public = getattr(user, "publicuserprofile", None)
+
+    role = Role.CUSTOMER
+    avatar_url = ""
+
+    if admin:
+        role = admin.role
+        if admin.profile_picture:
+            avatar_url = admin.profile_picture.url
+    elif staff:
+        role = staff.role
+        if staff.profile_picture:
+            avatar_url = staff.profile_picture.url
+    elif public:
+        role = public.role
+    elif user.is_superuser:
+        role = Role.ADMIN
+
+    if request and avatar_url and not str(avatar_url).startswith("http"):
+        avatar_url = request.build_absolute_uri(avatar_url)
+
+    display_name = user.get_full_name() or user.email or user.username
+
+    return {
+        "id": user.id,
+        "username": user.username,
+        "phone": user.phone_number,
+        "email": user.email,
+        "full_name": user.get_full_name() or "",
+        "first_name": user.first_name or "",
+        "last_name": user.last_name or "",
+        "date_joined": user.date_joined.isoformat() if user.date_joined else "",
+        "last_login": user.last_login.isoformat() if user.last_login else None,
+        "is_active": user.is_active,
+        "is_staff": user.is_staff,
+        "is_superuser": user.is_superuser,
+        "profile": {
+            "role": role,
+            "display_name": display_name,
+            "avatar_url": avatar_url or "",
+        },
+    }
 
 
 class LoginTokenObtainPairSerializer(TokenObtainPairSerializer):
@@ -212,11 +265,10 @@ class LoginTokenObtainPairSerializer(TokenObtainPairSerializer):
 
         refresh = self.get_token(user)
 
-        # Minimal, stable response surface for clients
         data = {
             "refresh": str(refresh),
             "access": str(refresh.access_token),
-          
+            "user": serialize_auth_user(user, request),
         }
         return data
 

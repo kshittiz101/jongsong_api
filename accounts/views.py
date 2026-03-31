@@ -1,3 +1,4 @@
+from drf_spectacular.utils import extend_schema
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
@@ -10,6 +11,7 @@ from .serializers import (
     PublicUserCreateSerializer,
     StaffCreateSerializer,
     LoginTokenObtainPairSerializer,
+    serialize_auth_user,
 )
 from .models import CustomUser
 from rest_framework.parsers import JSONParser, FormParser, MultiPartParser
@@ -19,6 +21,10 @@ from core.permissions import IsSuperUser
 
 _AUTH_PARSER_CLASSES = [JSONParser, PlainTextJSONParser]
 
+_AUTH_OPENAPI_TAG = ['auth']
+
+
+@extend_schema(tags=_AUTH_OPENAPI_TAG)
 class AdminRegistrationBySuperuserView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = AdminCreateSerializer
@@ -26,6 +32,7 @@ class AdminRegistrationBySuperuserView(generics.CreateAPIView):
     parser_classes = [JSONParser, FormParser, MultiPartParser]
 
 
+@extend_schema(tags=_AUTH_OPENAPI_TAG)
 class StaffRegistrationBySuperuserView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = StaffCreateSerializer
@@ -33,6 +40,7 @@ class StaffRegistrationBySuperuserView(generics.CreateAPIView):
     parser_classes = [JSONParser]
 
 
+@extend_schema(tags=_AUTH_OPENAPI_TAG)
 class PublicUserRegistrationView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = PublicUserCreateSerializer
@@ -40,17 +48,31 @@ class PublicUserRegistrationView(generics.CreateAPIView):
     parser_classes = [JSONParser, FormParser, MultiPartParser]
 
 
+@extend_schema(tags=_AUTH_OPENAPI_TAG)
 class LoginView(TokenObtainPairView):
     permission_classes = [AllowAny]
     serializer_class = LoginTokenObtainPairSerializer
     parser_classes = _AUTH_PARSER_CLASSES
 
 
+@extend_schema(tags=_AUTH_OPENAPI_TAG)
+class CurrentUserView(APIView):
+    """GET current user — same shape as the `user` object on login."""
+
+    permission_classes = [IsAuthenticated]
+    parser_classes = _AUTH_PARSER_CLASSES
+
+    def get(self, request):
+        return Response(serialize_auth_user(request.user, request))
+
+
+@extend_schema(tags=_AUTH_OPENAPI_TAG)
 class RefreshView(TokenRefreshView):
     permission_classes = [AllowAny]
     parser_classes = _AUTH_PARSER_CLASSES
 
 
+@extend_schema(tags=_AUTH_OPENAPI_TAG)
 class LogoutView(APIView):
     """
     Logout by blacklisting the provided refresh token.

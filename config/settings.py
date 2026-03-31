@@ -162,6 +162,12 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': config('SPECTACULAR_DESCRIPTION'),
     'VERSION': config('SPECTACULAR_VERSION'),
       'SERVE_INCLUDE_SCHEMA': config('SPECTACULAR_SERVE_INCLUDE_SCHEMA', default=False, cast=bool),
+    'TAGS': [
+        {
+            'name': 'auth',
+            'description': 'Public/admin/staff registration, JWT login, refresh, and logout.',
+        },
+    ],
     'SECURITY': [
         {'Bearer': []}
     ],

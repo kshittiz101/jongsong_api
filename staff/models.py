@@ -9,7 +9,7 @@ class StaffProfile(models.Model):
     This model is used to store the staff profile information.
     """
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name="staff_profile")
-    role = models.CharField(max_length=100, choices=Role.choices, default=Role.OTHER)
+    role = models.CharField(max_length=100, choices=Role.choices, default=Role.STAFF)
     designation = models.CharField(
         max_length=100,
         choices=Designations.choices,
