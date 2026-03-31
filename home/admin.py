@@ -1,7 +1,13 @@
 from django.contrib import admin
 
-from home.models import Feature, Services
+from home.models import Feature, Services, HeroImage
 
+
+@admin.register(HeroImage)
+class HeroImageAdmin(admin.ModelAdmin):
+    list_display = ("id", "title", "description", "category", "created_at", "updated_at")
+    search_fields = ("title", "description", "category")
+    ordering = ("-id",)
 
 @admin.register(Feature)
 class FeatureAdmin(admin.ModelAdmin):
