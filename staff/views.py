@@ -24,7 +24,7 @@ class StaffManagementViewSet(viewsets.ModelViewSet):
     ordering = ["-date_joined"]
 
     def get_queryset(self):
-        qs = super().get_queryset()
+        qs = super().get_queryset().select_related("staff_profile__designation")
         is_active = self.request.query_params.get("is_active")
         if is_active is None:
             return qs

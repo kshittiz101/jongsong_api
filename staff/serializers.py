@@ -4,7 +4,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 
-from core.constants.designations import Designations
+from accounts.models import Designation
 from core.constants.roles import Role
 from staff.models import StaffProfile
 
@@ -12,7 +12,19 @@ from staff.models import StaffProfile
 User = get_user_model()
 
 
+class DesignationNestedSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Designation
+        fields = ["id", "name"]
+
+
+def default_designation_instance():
+    return Designation.objects.get(name="Other")
+
+
 class StaffProfileAdminSerializer(serializers.ModelSerializer):
+    designation = DesignationNestedSerializer(read_only=True)
+
     class Meta:
         model = StaffProfile
         fields = [
@@ -27,7 +39,7 @@ class StaffProfileAdminSerializer(serializers.ModelSerializer):
 
 class StaffAdminListSerializer(serializers.ModelSerializer):
     full_name = serializers.SerializerMethodField()
-    designation = serializers.CharField(source="staff_profile.designation", read_only=True)
+    designation = DesignationNestedSerializer(source="staff_profile.designation", read_only=True)
 
     class Meta:
         model = User
@@ -74,10 +86,10 @@ class StaffAdminCreateSerializer(serializers.ModelSerializer):
         style={"input_type": "password"},
         label="Confirm password",
     )
-    designation = serializers.ChoiceField(
-        choices=Designations.choices,
+    designation = serializers.PrimaryKeyRelatedField(
+        queryset=Designation.objects.all(),
         required=False,
-        default=Designations.OTHER,
+        allow_null=False,
     )
     email = serializers.EmailField(validators=[UniqueValidator(queryset=User.objects.all())])
     phone_number = serializers.CharField(validators=[UniqueValidator(queryset=User.objects.all())])
@@ -111,7 +123,9 @@ class StaffAdminCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop("password2", None)
         password = validated_data.pop("password")
-        designation = validated_data.pop("designation", Designations.OTHER)
+        designation = validated_data.pop("designation", None)
+        if designation is None:
+            designation = default_designation_instance()
 
         user = User.objects.create_user(
             password=password,
@@ -129,9 +143,10 @@ class StaffAdminCreateSerializer(serializers.ModelSerializer):
 
 
 class StaffAdminUpdateSerializer(serializers.ModelSerializer):
-    designation = serializers.ChoiceField(
-        choices=Designations.choices,
+    designation = serializers.PrimaryKeyRelatedField(
+        queryset=Designation.objects.all(),
         required=False,
+        allow_null=False,
     )
 
     class Meta:

@@ -3,6 +3,8 @@ from django.urls import include, path
 from .views import (
     AdminRegistrationBySuperuserView,
     CurrentUserView,
+    DesignationDetailView,
+    DesignationListCreateView,
     LoginView,
     LogoutView,
     PublicUserRegistrationView,
@@ -23,6 +25,16 @@ user_urlpatterns = [
 ]
 
 urlpatterns = [
+    path(
+        "admin/designations/",
+        DesignationListCreateView.as_view(),
+        name="admin-designations-list",
+    ),
+    path(
+        "admin/designations/<int:pk>/",
+        DesignationDetailView.as_view(),
+        name="admin-designations-detail",
+    ),
     path("auth/", include(user_urlpatterns)),
     path("register/", PublicUserRegistrationView.as_view(), name="public-register-legacy"),
     path("admin/register/", AdminRegistrationBySuperuserView.as_view(), name="admin-register-legacy"),

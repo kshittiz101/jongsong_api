@@ -1,8 +1,7 @@
 from django.db import models
-from accounts.models import CustomUser
+from accounts.models import CustomUser, default_other_designation_pk
 from core.image_validators import validate_image_file_integrity, validate_image_file_size
 from core.constants.roles import Role
-from core.constants.designations import Designations
 # Create your models here.
 class StaffProfile(models.Model):
     """
@@ -10,10 +9,11 @@ class StaffProfile(models.Model):
     """
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name="staff_profile")
     role = models.CharField(max_length=100, choices=Role.choices, default=Role.STAFF)
-    designation = models.CharField(
-        max_length=100,
-        choices=Designations.choices,
-        default=Designations.OTHER,
+    designation = models.ForeignKey(
+        "accounts.Designation",
+        on_delete=models.PROTECT,
+        related_name="staff_profiles",
+        default=default_other_designation_pk,
     )
     
     profile_picture = models.ImageField(

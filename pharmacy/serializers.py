@@ -21,11 +21,11 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class MedicineSerializer(serializers.ModelSerializer):
-    total_stock = serializers.ReadOnlyField()
-    is_low_stock = serializers.ReadOnlyField()
-    is_expired = serializers.ReadOnlyField()
-    days_to_expiry = serializers.ReadOnlyField()
-    is_expiring_soon = serializers.ReadOnlyField()
+    total_stock = serializers.IntegerField(read_only=True)
+    is_low_stock = serializers.BooleanField(read_only=True)
+    is_expired = serializers.BooleanField(read_only=True)
+    days_to_expiry = serializers.IntegerField(read_only=True, allow_null=True)
+    is_expiring_soon = serializers.BooleanField(read_only=True)
 
     class Meta:
         model = Medicine

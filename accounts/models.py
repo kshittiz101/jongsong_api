@@ -3,7 +3,6 @@ from django.contrib.auth.base_user import BaseUserManager
 from django.db import models
 from core.image_validators import validate_image_file_integrity, validate_image_file_size
 from core.constants.roles import Role
-from core.constants.designations import Designations
 
 
 class CustomUserManager(BaseUserManager):
@@ -54,7 +53,26 @@ class CustomUser(AbstractUser):
 
 
 
-        
+class Designation(models.Model):
+    """
+    This model is used to store the designation information.
+    """
+
+    name = models.CharField(max_length=100)
+    description = models.TextField(blank=True)
+
+    class Meta:
+        ordering = ["name"]
+
+    def __str__(self):
+        return self.name
+
+
+def default_other_designation_pk():
+    """DB default for profiles; matches the seeded \"Other\" designation (see migration 0004)."""
+    return Designation.objects.filter(name="Other").values_list("pk", flat=True).first()
+
+
 class AdminProfile(models.Model):
     user = models.OneToOneField(CustomUser, on_delete=models.CASCADE, related_name="admin_profile")
     profile_picture = models.ImageField(
@@ -68,10 +86,11 @@ class AdminProfile(models.Model):
         choices=Role.choices,
         default=Role.ADMIN,
     )
-    designation = models.CharField(
-        max_length=100,
-        choices=Designations.choices,
-        default=Designations.OTHER,
+    designation = models.ForeignKey(
+        Designation,
+        on_delete=models.PROTECT,
+        related_name="admin_profiles",
+        default=default_other_designation_pk,
     )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

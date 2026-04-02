@@ -6,12 +6,31 @@ from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
-from core.constants.designations import Designations
 from core.constants.roles import Role
 from normal_user.models import PublicUserProfile
 from staff.models import StaffProfile
 
-from .models import AdminProfile, CustomUser
+from .models import AdminProfile, CustomUser, Designation
+
+
+def default_designation_instance():
+    return Designation.objects.get(name="Other")
+
+
+class DesignationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Designation
+        fields = ["id", "name", "description"]
+        read_only_fields = ["id"]
+        extra_kwargs = {
+            "name": {
+                "validators": [UniqueValidator(queryset=Designation.objects.all())],
+            },
+        }
+
+
+# Backward-compatible alias for imports / OpenAPI references.
+DesignationReadSerializer = DesignationSerializer
 
 
 class AdminCreateSerializer(serializers.ModelSerializer):
@@ -22,10 +41,10 @@ class AdminCreateSerializer(serializers.ModelSerializer):
         style={"input_type": "password"},
         label="Confirm password",
     )
-    designation = serializers.ChoiceField(
-        choices=Designations.choices,
+    designation = serializers.PrimaryKeyRelatedField(
+        queryset=Designation.objects.all(),
         required=False,
-        default=Designations.OTHER,
+        allow_null=False,
     )
     profile_picture = serializers.ImageField(required=False, allow_null=True)
     email = serializers.EmailField(validators=[UniqueValidator(queryset=CustomUser.objects.all())])
@@ -52,7 +71,9 @@ class AdminCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop("password2", None)
         password = validated_data.pop("password")
-        designation = validated_data.pop("designation", Designations.OTHER)
+        designation = validated_data.pop("designation", None)
+        if designation is None:
+            designation = default_designation_instance()
         profile_picture = validated_data.pop("profile_picture", None)
 
         user = CustomUser.objects.create_user(
@@ -77,10 +98,10 @@ class StaffCreateSerializer(serializers.ModelSerializer):
         style={"input_type": "password"},
         label="Confirm password",
     )
-    designation = serializers.ChoiceField(
-        choices=Designations.choices,
+    designation = serializers.PrimaryKeyRelatedField(
+        queryset=Designation.objects.all(),
         required=False,
-        default=Designations.OTHER,
+        allow_null=False,
     )
     email = serializers.EmailField(validators=[UniqueValidator(queryset=CustomUser.objects.all())])
     phone_number = serializers.CharField(validators=[UniqueValidator(queryset=CustomUser.objects.all())])
@@ -106,7 +127,9 @@ class StaffCreateSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop("password2", None)
         password = validated_data.pop("password")
-        designation = validated_data.pop("designation", Designations.OTHER)
+        designation = validated_data.pop("designation", None)
+        if designation is None:
+            designation = default_designation_instance()
 
         user = CustomUser.objects.create_user(
             password=password,

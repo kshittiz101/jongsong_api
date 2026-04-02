@@ -10,10 +10,13 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
 
+from datetime import timedelta
 from pathlib import Path
 from decouple import config
 from django.core.validators import FileExtensionValidator
-from django.core.exceptions import ValidationError
+
+from core.constants import HERO_IMAGE_MAX_BYTES
+from core.image_validators import validate_image_file_size
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,7 +31,8 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = [host.strip() for host in config('ALLOWED_HOSTS', default='').split(',')] if config('ALLOWED_HOSTS') else []
+ALLOWED_HOSTS = [host.strip() for host in config(
+    'ALLOWED_HOSTS', default='').split(',')] if config('ALLOWED_HOSTS') else []
 
 
 # Application definition
@@ -41,7 +45,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    # apps 
+    # apps
     'core',
     'home',
     'accounts',
@@ -142,11 +146,12 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 20,
 }
 
 # JWT (SimpleJWT) production defaults
 # Keep lifetimes short; allow refresh rotation + blacklist for compromise containment.
-from datetime import timedelta
 
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=10),
@@ -162,7 +167,7 @@ SPECTACULAR_SETTINGS = {
     'TITLE': config('SPECTACULAR_TITLE'),
     'DESCRIPTION': config('SPECTACULAR_DESCRIPTION'),
     'VERSION': config('SPECTACULAR_VERSION'),
-      'SERVE_INCLUDE_SCHEMA': config('SPECTACULAR_SERVE_INCLUDE_SCHEMA', default=False, cast=bool),
+    'SERVE_INCLUDE_SCHEMA': config('SPECTACULAR_SERVE_INCLUDE_SCHEMA', default=False, cast=bool),
     'TAGS': [
         {
             'name': 'auth',
@@ -192,25 +197,18 @@ STATIC_URL = 'static/'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Upload limits (defense in depth; align with app validators on ImageField)
-# ~6 MiB allows slightly over max validated image size while capping abuse.
-DATA_UPLOAD_MAX_MEMORY_SIZE = 6 * 1024 * 1024  # 6 MiB
-FILE_UPLOAD_MAX_MEMORY_SIZE = 6 * 1024 * 1024  # 6 MiB
+# Upload limits (defense in depth; align with app validators on ImageField).
+# Request body must allow largest validated upload (hero) plus multipart overhead.
+_DATA_UPLOAD_MULTIPART_MARGIN = 512 * 1024
+DATA_UPLOAD_MAX_MEMORY_SIZE = HERO_IMAGE_MAX_BYTES + _DATA_UPLOAD_MULTIPART_MARGIN
+# Stream larger files to disk instead of holding full body in RAM.
+FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024  # 5 MiB
 FILE_UPLOAD_PERMISSIONS = 0o644
 
 # Image upload validators (used by ImageField validators=...).
-def _validate_image_size_5mb(file_obj):
-    # Some storages provide size lazily; getattr keeps it safe.
-    size = getattr(file_obj, "size", None)
-    if size is None:
-        return
-    if size > 5 * 1024 * 1024:
-        raise ValidationError("Image file too large (max 5 MB).")
-
-
 _IMAGE_VALIDATORS = [
     FileExtensionValidator(allowed_extensions=["jpg", "jpeg", "png", "webp"]),
-    _validate_image_size_5mb,
+    validate_image_file_size,
 ]
 
 # Default primary key field type
@@ -232,5 +230,6 @@ EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
 EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=True, cast=bool)
 EMAIL_USE_SSL = config('EMAIL_USE_SSL', default=False, cast=bool)
 EMAIL_TIMEOUT = config('EMAIL_TIMEOUT', default=30, cast=int)
-DEFAULT_FROM_EMAIL = config('DEFAULT_FROM_EMAIL', default='webmaster@localhost')
+DEFAULT_FROM_EMAIL = config(
+    'DEFAULT_FROM_EMAIL', default='webmaster@localhost')
 SERVER_EMAIL = config('SERVER_EMAIL', default=DEFAULT_FROM_EMAIL)

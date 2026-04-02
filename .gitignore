@@ -177,5 +177,12 @@ cython_debug/
 !*/migrations/__init__.py
 
 
+# Django app fixtures (local `loaddata` dumps; canonical seed is in migrations)
+*/fixtures/**
+!*/fixtures/.gitkeep
+
 # others personal files 
 .docs/
+.cursor/
+.projects/
+.projects/** */
