@@ -5,4 +5,5 @@ urlpatterns = [
     path("", include("pharmacy.urls")),
     path("", include("accounts.urls")),
     path("", include("staff.urls")),
+    path("", include("patient.urls")),
 ]
