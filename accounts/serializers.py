@@ -129,8 +129,20 @@ class PublicUserCreateSerializer(serializers.ModelSerializer):
         style={"input_type": "password"},
         label="Confirm password",
     )
-    first_name = serializers.CharField(max_length=150, trim_whitespace=True)
-    last_name = serializers.CharField(max_length=150, trim_whitespace=True)
+    first_name = serializers.CharField(
+        max_length=150,
+        trim_whitespace=True,
+        required=False,
+        allow_blank=True,
+        default="",
+    )
+    last_name = serializers.CharField(
+        max_length=150,
+        trim_whitespace=True,
+        required=False,
+        allow_blank=True,
+        default="",
+    )
     email = serializers.EmailField(validators=[UniqueValidator(queryset=CustomUser.objects.all())])
     phone_number = serializers.CharField(validators=[UniqueValidator(queryset=CustomUser.objects.all())])
 
@@ -220,7 +232,7 @@ def serialize_auth_user(user, request=None):
 class LoginTokenObtainPairSerializer(TokenObtainPairSerializer):
     """
     Production login: accepts a single identifier (email/phone/username) + password,
-    returns access/refresh plus a small user payload.
+    returns access/refresh tokens only.
     """
 
     identifier = serializers.CharField(write_only=True)
@@ -268,7 +280,6 @@ class LoginTokenObtainPairSerializer(TokenObtainPairSerializer):
         data = {
             "refresh": str(refresh),
             "access": str(refresh.access_token),
-            "user": serialize_auth_user(user, request),
         }
         return data
 

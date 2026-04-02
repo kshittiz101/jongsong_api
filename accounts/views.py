@@ -44,7 +44,7 @@ class StaffRegistrationBySuperuserView(generics.CreateAPIView):
 class PublicUserRegistrationView(generics.CreateAPIView):
     queryset = CustomUser.objects.all()
     serializer_class = PublicUserCreateSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsSuperUser]
     parser_classes = [JSONParser, FormParser, MultiPartParser]
 
 
