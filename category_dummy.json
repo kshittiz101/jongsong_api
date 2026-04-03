@@ -3,8 +3,8 @@
         "model": "pharmacy.category",
         "pk": 1,
         "fields": {
-            "name": "Medicine",
-            "description": "All types of medicines including tablets and syrups",
+            "name": "Pain Relief",
+            "description": "Medicines for headaches, body pain, and fever like paracetamol and ibuprofen",
             "created_at": "2026-01-01T10:00:00Z",
             "updated_at": "2026-01-01T10:00:00Z"
         }
@@ -13,8 +13,8 @@
         "model": "pharmacy.category",
         "pk": 2,
         "fields": {
-            "name": "Medical Equipment",
-            "description": "Devices and tools used in healthcare",
+            "name": "Cold & Flu",
+            "description": "Medicines for cough, cold, sore throat, and flu symptoms",
             "created_at": "2026-01-02T10:00:00Z",
             "updated_at": "2026-01-02T10:00:00Z"
         }
@@ -23,8 +23,8 @@
         "model": "pharmacy.category",
         "pk": 3,
         "fields": {
-            "name": "Supplements",
-            "description": "Vitamins and dietary supplements",
+            "name": "Vitamins & Supplements",
+            "description": "Daily vitamins, minerals, and nutritional supplements for better health",
             "created_at": "2026-01-03T10:00:00Z",
             "updated_at": "2026-01-03T10:00:00Z"
         }
@@ -33,8 +33,8 @@
         "model": "pharmacy.category",
         "pk": 4,
         "fields": {
-            "name": "Personal Care",
-            "description": "Hygiene and personal care products",
+            "name": "Digestive Health",
+            "description": "Medicines for stomach problems, acidity, constipation, and digestion",
             "created_at": "2026-01-04T10:00:00Z",
             "updated_at": "2026-01-04T10:00:00Z"
         }
@@ -44,9 +44,159 @@
         "pk": 5,
         "fields": {
             "name": "First Aid",
-            "description": "Basic first aid supplies and kits",
+            "description": "Basic first aid supplies, bandages, antiseptics, and emergency care items",
             "created_at": "2026-01-05T10:00:00Z",
             "updated_at": "2026-01-05T10:00:00Z"
+        }
+    },
+    {
+        "model": "pharmacy.category",
+        "pk": 6,
+        "fields": {
+            "name": "Skin Care",
+            "description": "Creams, ointments, and lotions for skin problems, rashes, and wound care",
+            "created_at": "2026-01-06T10:00:00Z",
+            "updated_at": "2026-01-06T10:00:00Z"
+        }
+    },
+    {
+        "model": "pharmacy.category",
+        "pk": 7,
+        "fields": {
+            "name": "Eye & Ear Care",
+            "description": "Eye drops, ear drops, and care products for eye and ear health",
+            "created_at": "2026-01-07T10:00:00Z",
+            "updated_at": "2026-01-07T10:00:00Z"
+        }
+    },
+    {
+        "model": "pharmacy.category",
+        "pk": 8,
+        "fields": {
+            "name": "Diabetes Care",
+            "description": "Blood sugar monitors, test strips, and diabetes management products",
+            "created_at": "2026-01-08T10:00:00Z",
+            "updated_at": "2026-01-08T10:00:00Z"
+        }
+    },
+    {
+        "model": "pharmacy.category",
+        "pk": 9,
+        "fields": {
+            "name": "Blood Pressure",
+            "description": "BP monitors and medicines for managing blood pressure",
+            "created_at": "2026-01-09T10:00:00Z",
+            "updated_at": "2026-01-09T10:00:00Z"
+        }
+    },
+    {
+        "model": "pharmacy.category",
+        "pk": 10,
+        "fields": {
+            "name": "Baby Care",
+            "description": "Baby food, diapers, wipes, and gentle medicines for infants",
+            "created_at": "2026-01-10T10:00:00Z",
+            "updated_at": "2026-01-10T10:00:00Z"
+        }
+    },
+    {
+        "model": "pharmacy.category",
+        "pk": 11,
+        "fields": {
+            "name": "Women's Health",
+            "description": "Products for women's health needs including prenatal vitamins and personal care",
+            "created_at": "2026-01-11T10:00:00Z",
+            "updated_at": "2026-01-11T10:00:00Z"
+        }
+    },
+    {
+        "model": "pharmacy.category",
+        "pk": 12,
+        "fields": {
+            "name": "Men's Health",
+            "description": "Products for men's health needs including supplements and personal care",
+            "created_at": "2026-01-12T10:00:00Z",
+            "updated_at": "2026-01-12T10:00:00Z"
+        }
+    },
+    {
+        "model": "pharmacy.category",
+        "pk": 13,
+        "fields": {
+            "name": "Heart Care",
+            "description": "Medicines and supplements for heart health and cholesterol management",
+            "created_at": "2026-01-13T10:00:00Z",
+            "updated_at": "2026-01-13T10:00:00Z"
+        }
+    },
+    {
+        "model": "pharmacy.category",
+        "pk": 14,
+        "fields": {
+            "name": "Bone & Joint Care",
+            "description": "Calcium supplements and medicines for arthritis, joint pain, and bone health",
+            "created_at": "2026-01-14T10:00:00Z",
+            "updated_at": "2026-01-14T10:00:00Z"
+        }
+    },
+    {
+        "model": "pharmacy.category",
+        "pk": 15,
+        "fields": {
+            "name": "Allergy Relief",
+            "description": "Antihistamines and medicines for seasonal allergies and allergic reactions",
+            "created_at": "2026-01-15T10:00:00Z",
+            "updated_at": "2026-01-15T10:00:00Z"
+        }
+    },
+    {
+        "model": "pharmacy.category",
+        "pk": 16,
+        "fields": {
+            "name": "Oral Care",
+            "description": "Toothpaste, mouthwash, and products for dental and oral hygiene",
+            "created_at": "2026-01-16T10:00:00Z",
+            "updated_at": "2026-01-16T10:00:00Z"
+        }
+    },
+    {
+        "model": "pharmacy.category",
+        "pk": 17,
+        "fields": {
+            "name": "Hair Care",
+            "description": "Shampoos, oils, and treatments for hair problems and scalp care",
+            "created_at": "2026-01-17T10:00:00Z",
+            "updated_at": "2026-01-17T10:00:00Z"
+        }
+    },
+    {
+        "model": "pharmacy.category",
+        "pk": 18,
+        "fields": {
+            "name": "Medical Devices",
+            "description": "Thermometers, nebulizers, and other home healthcare devices",
+            "created_at": "2026-01-18T10:00:00Z",
+            "updated_at": "2026-01-18T10:00:00Z"
+        }
+    },
+    {
+        "model": "pharmacy.category",
+        "pk": 19,
+        "fields": {
+            "name": "Infection Treatment",
+            "description": "Antibiotics and antifungal medicines for treating infections",
+            "created_at": "2026-01-19T10:00:00Z",
+            "updated_at": "2026-01-19T10:00:00Z"
+        }
+    },
+    {
+        "model": "pharmacy.category",
+        "pk": 20,
+        "fields": {
+            "name": "Sleep & Stress Relief",
+            "description": "Medicines and supplements for better sleep and managing stress",
+            "created_at": "2026-01-20T10:00:00Z",
+            "updated_at": "2026-01-20T10:00:00Z"
         }
     }
 ]

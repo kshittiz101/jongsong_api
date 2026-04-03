@@ -12,6 +12,9 @@ FORM_CHOICES = (
 FREQUENCY_CHOICES = (
     ("daily", "Daily"),
     ("twice_daily", "Twice Daily"),
+    ("three_times_daily", "Three Times Daily"),
+    ("four_times_daily", "Three Times Daily"),
+    ("each_hour", "Each Hour"),
     ("weekly", "Weekly"),
     ("as_needed", "As needed"),
 )

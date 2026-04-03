@@ -7,7 +7,6 @@ from PIL import Image, UnidentifiedImageError
 
 from .constants import (
     HERO_IMAGE_MAX_BYTES,
-    HERO_IMAGE_MIN_BYTES,
     IMAGE_UPLOAD_MAX_BYTES,
 )
 
@@ -26,14 +25,10 @@ def validate_image_file_size(file):
 
 
 def validate_hero_image_file_size(file):
-    """Hero images must be within HERO_IMAGE_MIN_BYTES..HERO_IMAGE_MAX_BYTES."""
+    """Hero images must be at most HERO_IMAGE_MAX_BYTES."""
     size = getattr(file, "size", None)
     if size is None:
         return
-    if size < HERO_IMAGE_MIN_BYTES:
-        raise ValidationError(
-            f"Hero image must be at least {HERO_IMAGE_MIN_BYTES // (1024 * 1024)} MB."
-        )
     if size > HERO_IMAGE_MAX_BYTES:
         raise ValidationError(
             f"Hero image must be at most {HERO_IMAGE_MAX_BYTES // (1024 * 1024)} MB."
