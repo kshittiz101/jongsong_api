@@ -1,21 +1,22 @@
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
-from django.urls import path, include
-from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+from django.urls import include, path
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+
 urlpatterns = [
     path('django-admin/', admin.site.urls),
-    path("api/", include("core.default_routers")),
-    path("api/token/", TokenObtainPairView.as_view(), name="token_obtain_pair"),
-    path("api/token/refresh/", TokenRefreshView.as_view(), name="token_refresh"),
-    # swagger ui
+
+    # Versioned API — all app endpoints live under /api/v1/
+    path("api/v1/", include("common.default_routers")),
+
+    # JWT token endpoints — not versioned (simplejwt convention)
+    path("api/v1/auth/token/", include("apps.accounts.token_urls")),
+
+    # OpenAPI schema
     path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
     path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
-
 ]
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
-
