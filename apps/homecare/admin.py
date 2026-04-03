@@ -12,7 +12,6 @@ from .models import (
 class MedicationLogInline(admin.TabularInline):
     model = MedicationLog
     extra = 0
-    raw_id_fields = ("marked_by",)
 
 
 @admin.register(Medication)
@@ -34,7 +33,6 @@ class MedicationAdmin(admin.ModelAdmin):
         "patient__email",
         "patient__phone_number",
     )
-    raw_id_fields = ("patient",)
     readonly_fields = ("created_at", "updated_at")
     inlines = (MedicationLogInline,)
 
@@ -51,7 +49,6 @@ class MedicationLogAdmin(admin.ModelAdmin):
     )
     list_filter = ("status",)
     search_fields = ("medication__medication_name", "notes")
-    raw_id_fields = ("medication", "marked_by")
 
 
 @admin.register(PatientVitalReading)
@@ -68,7 +65,6 @@ class PatientVitalReadingAdmin(admin.ModelAdmin):
     )
     list_filter = ("recorded_at",)
     search_fields = ("patient__email", "notes")
-    raw_id_fields = ("patient", "recorded_by")
     date_hierarchy = "recorded_at"
 
 
@@ -77,7 +73,6 @@ class MedicationReportAdmin(admin.ModelAdmin):
     list_display = ("id", "patient", "report_date", "recorded_by", "created_at")
     list_filter = ("report_date",)
     search_fields = ("summary", "patient__email")
-    raw_id_fields = ("patient", "recorded_by")
     date_hierarchy = "report_date"
 
 
@@ -94,4 +89,3 @@ class PatientCareAssignmentAdmin(admin.ModelAdmin):
     )
     list_filter = ("is_active",)
     search_fields = ("patient__email", "notes")
-    raw_id_fields = ("patient", "doctor", "nurse")

@@ -17,12 +17,15 @@ class DesignationAdmin(admin.ModelAdmin):
 
 @admin.register(CustomUser)
 class CustomUserAdmin(admin.ModelAdmin):
-    list_display = ["username", "email", "phone_number", "is_staff", "is_active"]
+    list_display = ["id", "username", "email", "phone_number", "is_staff", "is_active"]
+    list_display_links = ["id", "username"]
+    search_fields = ["email", "username", "phone_number", "first_name", "last_name"]
 
 
 @admin.register(StaffProfile)
 class StaffProfileAdmin(admin.ModelAdmin):
     list_display = [
+        "id",
         "user",
         "profile_picture",
         "highest_degree",
@@ -37,7 +40,6 @@ class PublicUserProfileAdmin(admin.ModelAdmin):
     list_display = ["id", "user", "role", "created_at"]
     list_filter = ["role"]
     search_fields = ["user__email", "user__phone_number"]
-    raw_id_fields = ["user"]
 
 
 @admin.register(PatientProfile)
@@ -55,7 +57,7 @@ class PatientProfileAdmin(admin.ModelAdmin):
     list_display_links = ("id", "unique_health_id", "patient_name")
     list_filter = ("patient_type", "role", "is_active_patient", "gender")
     search_fields = ("unique_health_id", "user__email", "user__phone_number")
-    raw_id_fields = ("user",)
+    autocomplete_fields = ("user",)
     readonly_fields = (
         "unique_health_id",
         "admission_date",
