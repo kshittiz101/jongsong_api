@@ -141,6 +141,20 @@ pipenv run flake8
 
 ---
 
+## Documentation
+
+This repository includes a **MkDocs** site (Material theme) under `docs/` for architecture, configuration, and per-app API layout.
+
+```bash
+# Local preview (opens a dev server; default http://127.0.0.1:8000/ for MkDocs)
+pipenv run mkdocs serve
+
+# Static build output in site/ (already listed in .gitignore — do not commit)
+pipenv run mkdocs build
+```
+
+---
+
 ## Production notes
 
 - Switch **`DATABASES`** in `config/settings.py` to a production-grade database (e.g. PostgreSQL) and add the appropriate driver.
