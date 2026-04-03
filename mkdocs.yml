@@ -1,0 +1,18 @@
+site_name: Jongsong API
+docs_dir: docs
+theme:
+  name: material
+nav:
+  - Home: index.md
+  - Architecture: architecture.md
+  - Configuration: configuration.md
+  - Apps:
+      - Accounts: apps/accounts.md
+      - Home: apps/home.md
+      - Home care: apps/homecare.md
+      - Pharmacy: apps/pharmacy.md
+      - Common: apps/common.md
+markdown_extensions:
+  - toc:
+      permalink: true
+  - pymdownx.superfences
