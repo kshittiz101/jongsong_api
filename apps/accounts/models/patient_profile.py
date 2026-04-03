@@ -14,16 +14,8 @@ from .user import CustomUser
 
 class PatientProfile(models.Model):
     """
-    Home-care clinical context linked one-to-one to CustomUser.
-
-    When unique_health_id is blank, save() assigns an internal HCNPL-* id.
-    A national UHID may be stored later via admin when available.
-
-    ``role`` mirrors the linked user's public profile role for API convenience;
-    it is kept aligned with ``PublicUserProfile.role`` on save.
-
-    ``user`` is required (one profile per user). Other fields may be nullable;
-    enforce required clinical data in serializers/forms where the product needs it.
+    Patient profile linked one-to-one to CustomUser.
+    When unique_health_id is blank, save() assigns an internal JSC-PAT-* id.
     """
 
     user = models.OneToOneField(
