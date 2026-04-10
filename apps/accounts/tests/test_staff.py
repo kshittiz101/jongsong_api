@@ -358,22 +358,70 @@ class StaffManagementApiTests(APITestCase):
         self.staff_user.refresh_from_db()
         self.assertTrue(self.staff_user.is_staff)
 
-    def test_update_role_remains_staff(self):
-        """Staff role cannot be changed to admin via update."""
+    def test_update_profile_role_field(self):
+        """Admin can PATCH staff profile role (StaffProfile.role)."""
         self._auth_as_superuser()
 
-        # Attempt to update via nested role (if implemented) or direct field
         res = self.client.patch(
             f"/api/v1/admin/staff/{self.staff_user.pk}/",
-            {"role": "admin"},
+            {"role": Role.ADMIN},
             format="json",
         )
-        # Should reject because 'role' is not in allowed fields
-        self.assertEqual(res.status_code, 400, res.data)
+        self.assertEqual(res.status_code, 200, res.data)
 
-        # Verify role remains STAFF
         self.staff_profile.refresh_from_db()
-        self.assertEqual(self.staff_profile.role, Role.STAFF)
+        self.assertEqual(self.staff_profile.role, Role.ADMIN)
+
+    def test_create_staff_with_profile_details(self):
+        """POST can set StaffProfile text/numeric fields alongside the user."""
+        self._auth_as_superuser()
+
+        res = self.client.post(
+            "/api/v1/admin/staff/",
+            {
+                "email": "fullprofile@example.com",
+                "phone_number": "9911223344",
+                "password": "StaffPass123!@#",
+                "password2": "StaffPass123!@#",
+                "first_name": "Full",
+                "last_name": "Profile",
+                "address": "Kathmandu",
+                "highest_degree": "MBBS",
+                "field_of_study": "General Medicine",
+                "university": "TU",
+                "graduation_year": 2018,
+            },
+            format="json",
+        )
+        self.assertEqual(res.status_code, 201, res.data)
+
+        user = User.objects.get(email="fullprofile@example.com")
+        profile = StaffProfile.objects.get(user=user)
+        self.assertEqual(profile.address, "Kathmandu")
+        self.assertEqual(profile.highest_degree, "MBBS")
+        self.assertEqual(profile.field_of_study, "General Medicine")
+        self.assertEqual(profile.university, "TU")
+        self.assertEqual(profile.graduation_year, 2018)
+
+    def test_update_staff_profile_text_fields(self):
+        """PATCH can update staff profile extended fields."""
+        self._auth_as_superuser()
+
+        res = self.client.patch(
+            f"/api/v1/admin/staff/{self.staff_user.pk}/",
+            {
+                "address": "Pokhara",
+                "highest_degree": "MD",
+                "graduation_year": 2020,
+            },
+            format="json",
+        )
+        self.assertEqual(res.status_code, 200, res.data)
+
+        self.staff_profile.refresh_from_db()
+        self.assertEqual(self.staff_profile.address, "Pokhara")
+        self.assertEqual(self.staff_profile.highest_degree, "MD")
+        self.assertEqual(self.staff_profile.graduation_year, 2020)
 
     def test_update_allowed_fields(self):
         """Update allows modifying permitted fields like first_name, last_name."""

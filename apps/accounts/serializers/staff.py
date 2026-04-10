@@ -11,6 +11,18 @@ from ._common import default_designation_instance
 
 User = get_user_model()
 
+# Writable staff profile fields (excludes user FK, auto timestamps, designation handled on create/update).
+_STAFF_PROFILE_EXTRA_FIELDS = (
+    "role",
+    "profile_picture",
+    "citizenship_image",
+    "highest_degree",
+    "address",
+    "field_of_study",
+    "university",
+    "graduation_year",
+)
+
 
 class DesignationNestedSerializer(serializers.ModelSerializer):
     class Meta:
@@ -20,24 +32,28 @@ class DesignationNestedSerializer(serializers.ModelSerializer):
 
 class StaffProfileAdminSerializer(serializers.ModelSerializer):
     designation = DesignationNestedSerializer(read_only=True)
+    role = serializers.CharField(read_only=True)
 
     class Meta:
         model = StaffProfile
         fields = [
+            "role",
             "designation",
+            "profile_picture",
             "highest_degree",
             "address",
+            "citizenship_image",
             "field_of_study",
             "university",
             "graduation_year",
+            "created_at",
+            "updated_at",
         ]
 
 
 class StaffAdminListSerializer(serializers.ModelSerializer):
     full_name = serializers.SerializerMethodField()
-    designation = DesignationNestedSerializer(
-        source="staff_profile.designation", read_only=True
-    )
+    staff_profile = StaffProfileAdminSerializer(read_only=True)
 
     class Meta:
         model = User
@@ -49,8 +65,10 @@ class StaffAdminListSerializer(serializers.ModelSerializer):
             "last_name",
             "full_name",
             "is_active",
+            "is_staff",
             "date_joined",
-            "designation",
+            "last_login",
+            "staff_profile",
         ]
         read_only_fields = fields
 
@@ -78,7 +96,8 @@ class StaffAdminDetailSerializer(serializers.ModelSerializer):
 
 
 class StaffAdminCreateSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True, style={"input_type": "password"})
+    password = serializers.CharField(
+        write_only=True, style={"input_type": "password"})
     password2 = serializers.CharField(
         write_only=True,
         style={"input_type": "password"},
@@ -89,9 +108,28 @@ class StaffAdminCreateSerializer(serializers.ModelSerializer):
         required=False,
         allow_null=False,
     )
-    email = serializers.EmailField(validators=[UniqueValidator(queryset=User.objects.all())])
+    email = serializers.EmailField(
+        validators=[UniqueValidator(queryset=User.objects.all())])
     phone_number = serializers.CharField(
         validators=[UniqueValidator(queryset=User.objects.all())]
+    )
+    role = serializers.ChoiceField(
+        choices=Role.choices, required=False, default=Role.STAFF
+    )
+    profile_picture = serializers.ImageField(required=False, allow_null=True)
+    citizenship_image = serializers.ImageField(required=False, allow_null=True)
+    highest_degree = serializers.CharField(
+        required=False, allow_blank=True, allow_null=True, max_length=100
+    )
+    address = serializers.CharField(required=False, allow_blank=True, default="")
+    field_of_study = serializers.CharField(
+        required=False, allow_blank=True, allow_null=True, max_length=100
+    )
+    university = serializers.CharField(
+        required=False, allow_blank=True, allow_null=True, max_length=200
+    )
+    graduation_year = serializers.IntegerField(
+        required=False, allow_null=True, min_value=1, max_value=9999
     )
 
     class Meta:
@@ -104,6 +142,14 @@ class StaffAdminCreateSerializer(serializers.ModelSerializer):
             "password",
             "password2",
             "designation",
+            "role",
+            "profile_picture",
+            "citizenship_image",
+            "highest_degree",
+            "address",
+            "field_of_study",
+            "university",
+            "graduation_year",
         ]
 
     def validate(self, attrs):
@@ -111,7 +157,8 @@ class StaffAdminCreateSerializer(serializers.ModelSerializer):
         password2 = attrs.get("password2")
 
         if password != password2:
-            raise serializers.ValidationError({"password2": "Passwords do not match."})
+            raise serializers.ValidationError(
+                {"password2": "Passwords do not match."})
 
         try:
             validate_password(password=password)
@@ -127,6 +174,13 @@ class StaffAdminCreateSerializer(serializers.ModelSerializer):
         if designation is None:
             designation = default_designation_instance()
 
+        profile_data = {}
+        for key in _STAFF_PROFILE_EXTRA_FIELDS:
+            if key in validated_data:
+                profile_data[key] = validated_data.pop(key)
+        if "role" not in profile_data:
+            profile_data["role"] = Role.STAFF
+
         user = User.objects.create_user(
             password=password,
             is_staff=True,
@@ -136,8 +190,8 @@ class StaffAdminCreateSerializer(serializers.ModelSerializer):
         )
         StaffProfile.objects.create(
             user=user,
-            role=Role.STAFF,
             designation=designation,
+            **profile_data,
         )
         return user
 
@@ -147,6 +201,22 @@ class StaffAdminUpdateSerializer(serializers.ModelSerializer):
         queryset=Designation.objects.all(),
         required=False,
         allow_null=False,
+    )
+    role = serializers.ChoiceField(choices=Role.choices, required=False)
+    profile_picture = serializers.ImageField(required=False, allow_null=True)
+    citizenship_image = serializers.ImageField(required=False, allow_null=True)
+    highest_degree = serializers.CharField(
+        required=False, allow_blank=True, allow_null=True, max_length=100
+    )
+    address = serializers.CharField(required=False, allow_blank=True)
+    field_of_study = serializers.CharField(
+        required=False, allow_blank=True, allow_null=True, max_length=100
+    )
+    university = serializers.CharField(
+        required=False, allow_blank=True, allow_null=True, max_length=200
+    )
+    graduation_year = serializers.IntegerField(
+        required=False, allow_null=True, min_value=1, max_value=9999
     )
 
     class Meta:
@@ -158,6 +228,14 @@ class StaffAdminUpdateSerializer(serializers.ModelSerializer):
             "last_name",
             "is_active",
             "designation",
+            "role",
+            "profile_picture",
+            "citizenship_image",
+            "highest_degree",
+            "address",
+            "field_of_study",
+            "university",
+            "graduation_year",
         ]
         extra_kwargs = {
             "email": {"required": False, "allow_blank": False},
@@ -170,7 +248,7 @@ class StaffAdminUpdateSerializer(serializers.ModelSerializer):
     def validate(self, attrs):
         incoming_keys = set(getattr(self, "initial_data", {}).keys())
         allowed_keys = set(self.fields.keys())
-        forbidden_keys = {"is_staff", "is_superuser", "role", "admin_profile"}
+        forbidden_keys = {"is_staff", "is_superuser", "admin_profile"}
 
         unknown_keys = incoming_keys - allowed_keys
         if unknown_keys:
@@ -194,9 +272,11 @@ class StaffAdminUpdateSerializer(serializers.ModelSerializer):
 
         email = attrs.get("email")
         if email:
-            qs = User.objects.filter(email__iexact=email).exclude(pk=self.instance.pk)
+            qs = User.objects.filter(
+                email__iexact=email).exclude(pk=self.instance.pk)
             if qs.exists():
-                raise serializers.ValidationError({"email": ["This email is already in use."]})
+                raise serializers.ValidationError(
+                    {"email": ["This email is already in use."]})
 
         phone = attrs.get("phone_number")
         if phone:
@@ -213,15 +293,21 @@ class StaffAdminUpdateSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         designation = validated_data.pop("designation", None)
 
+        profile_updates = {}
+        for key in _STAFF_PROFILE_EXTRA_FIELDS:
+            if key in validated_data:
+                profile_updates[key] = validated_data.pop(key)
+
         for field, value in validated_data.items():
             setattr(instance, field, value)
         instance.save()
 
         staff_profile = getattr(instance, "staff_profile", None)
         if staff_profile:
-            staff_profile.role = Role.STAFF
             if designation is not None:
                 staff_profile.designation = designation
+            for field_name, value in profile_updates.items():
+                setattr(staff_profile, field_name, value)
             staff_profile.save()
 
         return instance
