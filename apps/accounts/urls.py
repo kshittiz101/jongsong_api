@@ -8,12 +8,15 @@ from .views import (
     DesignationListCreateView,
     LoginView,
     LogoutView,
+    PatientProfileMeView,
     PatientProfileViewSet,
     PatientUserOnboardingView,
     PublicUserRegistrationView,
     RefreshView,
     StaffManagementViewSet,
     StaffRegistrationBySuperuserView,
+    UserDetailView,
+    UserListView,
 )
 
 _staff_router = SimpleRouter()
@@ -43,6 +46,8 @@ user_urlpatterns = [
 ]
 
 urlpatterns = [
+    path("users/<int:pk>/", UserDetailView.as_view(), name="users-detail"),
+    path("users/", UserListView.as_view(), name="users-list"),
     path(
         "admin/designations/",
         DesignationListCreateView.as_view(),
@@ -54,13 +59,15 @@ urlpatterns = [
         name="admin-designations-detail",
     ),
     path("auth/", include(user_urlpatterns)),
-    path("register/", PublicUserRegistrationView.as_view(), name="public-register-legacy"),
-    path("admin/register/", AdminRegistrationBySuperuserView.as_view(), name="admin-register-legacy"),
-    path("staff/register/", StaffRegistrationBySuperuserView.as_view(), name="staff-register-legacy"),
     path(
         "admin/patient-users/",
         PatientUserOnboardingView.as_view(),
         name="admin-patient-user-onboarding",
+    ),
+    path(
+        "patient-profiles/me/",
+        PatientProfileMeView.as_view(),
+        name="patient-profile-me",
     ),
     path("", include(_staff_router.urls)),
     path("", include(_patient_router.urls)),

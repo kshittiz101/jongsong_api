@@ -124,7 +124,7 @@ SPECTACULAR_SETTINGS = {
         },
         {
             'name': 'home care',
-            'description': 'Vitals, medications, dose logs, medication reports, and care-team assignments.',
+            'description': 'Vitals, medications, dose logs, and medication reports.',
         },
     ],
     'SECURITY': [{'Bearer': []}],

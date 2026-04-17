@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from rest_framework.exceptions import PermissionDenied
 
 from apps.accounts.serializers import PatientUserBriefSerializer
 
@@ -36,7 +37,7 @@ class PatientVitalReadingSerializer(serializers.ModelSerializer):
         if not request or not request.user.is_authenticated:
             raise serializers.ValidationError("Authentication required.")
         if not can_manage_homecare_patient(request.user, patient_user):
-            raise serializers.ValidationError(
+            raise PermissionDenied(
                 "You are not allowed to manage data for this patient."
             )
         return patient_user

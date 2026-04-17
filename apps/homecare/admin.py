@@ -4,7 +4,6 @@ from .models import (
     Medication,
     MedicationLog,
     MedicationReport,
-    PatientCareAssignment,
     PatientVitalReading,
 )
 
@@ -74,18 +73,3 @@ class MedicationReportAdmin(admin.ModelAdmin):
     list_filter = ("report_date",)
     search_fields = ("summary", "patient__email")
     date_hierarchy = "report_date"
-
-
-@admin.register(PatientCareAssignment)
-class PatientCareAssignmentAdmin(admin.ModelAdmin):
-    list_display = (
-        "id",
-        "patient",
-        "doctor",
-        "nurse",
-        "is_active",
-        "assigned_at",
-        "ended_at",
-    )
-    list_filter = ("is_active",)
-    search_fields = ("patient__email", "notes")

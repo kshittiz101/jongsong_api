@@ -41,7 +41,7 @@ class RegistrationApiTests(APITestCase):
 
     def test_public_registration_requires_auth(self):
         res = self.client.post(
-            "/api/v1/register/",
+            "/api/v1/auth/public-user/",
             {
                 "email": "newpublic@example.com",
                 "phone_number": "9822222222",
@@ -55,7 +55,7 @@ class RegistrationApiTests(APITestCase):
     def test_superuser_can_create_public_user(self):
         self._auth_as_superuser()
         res = self.client.post(
-            "/api/v1/register/",
+            "/api/v1/auth/public-user/",
             {
                 "email": "newpublic2@example.com",
                 "phone_number": "9822222223",
@@ -71,7 +71,7 @@ class RegistrationApiTests(APITestCase):
 
     def test_admin_registration_requires_auth(self):
         res = self.client.post(
-            "/api/v1/admin/register/",
+            "/api/v1/auth/admin-user/",
             {
                 "email": "newadmin@example.com",
                 "phone_number": "9833333333",
@@ -84,7 +84,7 @@ class RegistrationApiTests(APITestCase):
 
     def test_staff_registration_requires_auth(self):
         res = self.client.post(
-            "/api/v1/staff/register/",
+            "/api/v1/auth/staff-user/",
             {
                 "email": "newstaff@example.com",
                 "phone_number": "9844444444",
@@ -98,7 +98,7 @@ class RegistrationApiTests(APITestCase):
     def test_superuser_can_create_admin(self):
         self._auth_as_superuser()
         res = self.client.post(
-            "/api/v1/admin/register/",
+            "/api/v1/auth/admin-user/",
             {
                 "email": "newadmin2@example.com",
                 "phone_number": "9855555555",
@@ -117,7 +117,7 @@ class RegistrationApiTests(APITestCase):
     def test_superuser_can_create_staff(self):
         self._auth_as_superuser()
         res = self.client.post(
-            "/api/v1/staff/register/",
+            "/api/v1/auth/staff-user/",
             {
                 "email": "newstaff2@example.com",
                 "phone_number": "9866666666",
@@ -136,7 +136,7 @@ class RegistrationApiTests(APITestCase):
     def test_non_superuser_gets_403_for_public_admin_and_staff(self):
         self._auth_as_normal_user()
         res_public = self.client.post(
-            "/api/v1/register/",
+            "/api/v1/auth/public-user/",
             {
                 "email": "blockedpublic@example.com",
                 "phone_number": "9899999999",
@@ -148,7 +148,7 @@ class RegistrationApiTests(APITestCase):
         self.assertEqual(res_public.status_code, 403, res_public.data)
 
         res_admin = self.client.post(
-            "/api/v1/admin/register/",
+            "/api/v1/auth/admin-user/",
             {
                 "email": "blockedadmin@example.com",
                 "phone_number": "9877777777",
@@ -160,7 +160,7 @@ class RegistrationApiTests(APITestCase):
         self.assertEqual(res_admin.status_code, 403, res_admin.data)
 
         res_staff = self.client.post(
-            "/api/v1/staff/register/",
+            "/api/v1/auth/staff-user/",
             {
                 "email": "blockedstaff@example.com",
                 "phone_number": "9888888888",

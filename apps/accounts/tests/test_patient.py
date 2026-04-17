@@ -180,7 +180,7 @@ class PatientProfileApiTests(APITestCase):
 
     def test_patient_can_get_me(self):
         self._jwt(self.patient_user)
-        res = self.client.get("/api/v1/admin/patient-profiles/me/", format="json")
+        res = self.client.get("/api/v1/patient-profiles/me/", format="json")
         self.assertEqual(res.status_code, 200, res.data)
         self.assertEqual(res.data["id"], self.profile.id)
 
@@ -264,3 +264,158 @@ class PatientProfileApiTests(APITestCase):
             format="json",
         )
         self.assertEqual(res.status_code, 400, res.data)
+
+    def test_create_returns_nested_user_in_response(self):
+        self._jwt(self.superuser)
+        eligible = User.objects.create_user(
+            email="eligible@example.com",
+            phone_number="9801111001",
+            password="EligiblePass123!@#",
+        )
+        PublicUserProfile.objects.create(user=eligible, role=Role.PATIENT)
+        res = self.client.post(
+            "/api/v1/admin/patient-profiles/",
+            {
+                "user": eligible.pk,
+                "patient_type": PatientType.HOME_CARE,
+                "date_of_birth": "1995-03-15",
+                "blood_group": BloodGroup.O_POSITIVE,
+                "gender": Gender.FEMALE,
+                "emergency_contact_name": "ec",
+                "emergency_contact_phone": "9801111002",
+                "emergency_contact_relation": "parent",
+                "home_address": "Bhaktapur",
+            },
+            format="json",
+        )
+        self.assertEqual(res.status_code, 201, res.data)
+        self.assertIn("user", res.data)
+        self.assertIsInstance(res.data["user"], dict)
+        self.assertEqual(res.data["user"]["email"], "eligible@example.com")
+
+    def test_patient_cannot_list_patient_profiles(self):
+        self._jwt(self.patient_user)
+        res = self.client.get("/api/v1/admin/patient-profiles/", format="json")
+        self.assertEqual(res.status_code, 403, res.data)
+
+    def test_patient_cannot_create_patient_profile(self):
+        self._jwt(self.patient_user)
+        lone = User.objects.create_user(
+            email="eligible2@example.com",
+            phone_number="9801111003",
+            password="XyzPass123!@#",
+        )
+        PublicUserProfile.objects.create(user=lone, role=Role.PATIENT)
+        res = self.client.post(
+            "/api/v1/admin/patient-profiles/",
+            {
+                "user": lone.pk,
+                "patient_type": PatientType.HOME_CARE,
+                "date_of_birth": "1996-01-01",
+                "blood_group": BloodGroup.A_POSITIVE,
+                "gender": Gender.MALE,
+                "emergency_contact_name": "e",
+                "emergency_contact_phone": "9801111004",
+                "emergency_contact_relation": "x",
+                "home_address": "addr",
+            },
+            format="json",
+        )
+        self.assertEqual(res.status_code, 403, res.data)
+
+    def test_patient_cannot_delete_own_profile(self):
+        self._jwt(self.patient_user)
+        res = self.client.delete(
+            f"/api/v1/admin/patient-profiles/{self.profile.pk}/",
+            format="json",
+        )
+        self.assertEqual(res.status_code, 403, res.data)
+
+    def test_superuser_can_delete_patient_profile(self):
+        victim = User.objects.create_user(
+            email="delme@example.com",
+            phone_number="9801111005",
+            password="DelPass123!@#",
+        )
+        PublicUserProfile.objects.create(user=victim, role=Role.PATIENT)
+        prof = PatientProfile.objects.create(
+            user=victim,
+            role=Role.PATIENT,
+            patient_type=PatientType.HOME_CARE,
+            date_of_birth="1997-01-01",
+            blood_group=BloodGroup.B_POSITIVE,
+            gender=Gender.MALE,
+            emergency_contact_name="e",
+            emergency_contact_phone="9801111006",
+            emergency_contact_relation="x",
+            home_address="addr",
+        )
+        self._jwt(self.superuser)
+        res = self.client.delete(
+            f"/api/v1/admin/patient-profiles/{prof.pk}/",
+            format="json",
+        )
+        self.assertEqual(res.status_code, 204, res.data)
+        self.assertFalse(PatientProfile.objects.filter(pk=prof.pk).exists())
+
+    def test_patient_patch_me_updates_allowed_fields(self):
+        self._jwt(self.patient_user)
+        res = self.client.patch(
+            "/api/v1/patient-profiles/me/",
+            {"allergies": "penicillin", "home_address": "Updated address"},
+            format="json",
+        )
+        self.assertEqual(res.status_code, 200, res.data)
+        self.assertEqual(res.data["allergies"], "penicillin")
+        self.assertEqual(res.data["home_address"], "Updated address")
+        self.profile.refresh_from_db()
+        self.assertEqual(self.profile.allergies, "penicillin")
+
+    def test_admin_list_search_by_email(self):
+        self._jwt(self.admin_user)
+        res = self.client.get(
+            "/api/v1/admin/patient-profiles/",
+            {"search": "pat@example.com"},
+            format="json",
+        )
+        self.assertEqual(res.status_code, 200, res.data)
+        results = res.data.get("results", res.data)
+        ids = {r["id"] for r in results}
+        self.assertIn(self.profile.id, ids)
+
+    def test_admin_list_filter_patient_type(self):
+        self._jwt(self.admin_user)
+        res = self.client.get(
+            "/api/v1/admin/patient-profiles/",
+            {"patient_type": PatientType.HOME_CARE},
+            format="json",
+        )
+        self.assertEqual(res.status_code, 200, res.data)
+        results = res.data.get("results", res.data)
+        for row in results:
+            self.assertEqual(row["patient_type"], PatientType.HOME_CARE)
+
+    def test_admin_list_filter_patient_type_homecare_alias(self):
+        self._jwt(self.admin_user)
+        res = self.client.get(
+            "/api/v1/admin/patient-profiles/",
+            {"patient_type": "HOMECARE"},
+            format="json",
+        )
+        self.assertEqual(res.status_code, 200, res.data)
+        results = res.data.get("results", res.data)
+        for row in results:
+            self.assertEqual(row["patient_type"], PatientType.HOME_CARE)
+
+    def test_admin_list_filter_phone_number_exact(self):
+        self._jwt(self.admin_user)
+        res = self.client.get(
+            "/api/v1/admin/patient-profiles/",
+            {"phone_number": "9800000002"},
+            format="json",
+        )
+        self.assertEqual(res.status_code, 200, res.data)
+        results = res.data.get("results", res.data)
+        self.assertEqual(len(results), 1)
+        self.assertEqual(results[0]["id"], self.profile.id)
+        self.assertEqual(results[0]["user"]["phone_number"], "9800000002")

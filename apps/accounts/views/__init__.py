@@ -9,8 +9,9 @@ from .auth import (
     RefreshView,
     StaffRegistrationBySuperuserView,
 )
-from .patient import PatientProfileViewSet, PatientUserOnboardingView
+from .patient import PatientProfileMeView, PatientProfileViewSet, PatientUserOnboardingView
 from .staff import StaffManagementViewSet
+from .users import UserDetailView, UserListView
 
 __all__ = [
     "AdminRegistrationBySuperuserView",
@@ -19,10 +20,13 @@ __all__ = [
     "DesignationListCreateView",
     "LoginView",
     "LogoutView",
+    "PatientProfileMeView",
     "PatientProfileViewSet",
     "PatientUserOnboardingView",
     "PublicUserRegistrationView",
     "RefreshView",
     "StaffManagementViewSet",
     "StaffRegistrationBySuperuserView",
+    "UserDetailView",
+    "UserListView",
 ]

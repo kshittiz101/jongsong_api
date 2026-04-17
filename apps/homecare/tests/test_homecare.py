@@ -14,7 +14,7 @@ from common.constants.genders import Gender
 from common.constants.patient_types import PatientType
 from common.constants.roles import Role
 
-from apps.homecare.models import PatientCareAssignment, PatientVitalReading
+from apps.homecare.models import PatientVitalReading
 
 User = get_user_model()
 
@@ -93,25 +93,6 @@ class HomeCareApiTests(APITestCase):
         self.assertEqual(res.status_code, 200, res.data)
         self.client.credentials(HTTP_AUTHORIZATION=f"Bearer {res.data['access']}")
 
-    def test_admin_can_create_care_assignment(self):
-        self._jwt(self.admin_user)
-        res = self.client.post(
-            "/api/v1/admin/home-care/care-assignments/",
-            {
-                "patient": self.patient_user.pk,
-                "doctor": self.doctor_user.pk,
-                "nurse": self.nurse_user.pk,
-            },
-            format="json",
-        )
-        self.assertEqual(res.status_code, 201, res.data)
-        self.assertTrue(
-            PatientCareAssignment.objects.filter(
-                patient_id=self.patient_user.pk,
-                is_active=True,
-            ).exists()
-        )
-
     def test_patient_can_record_own_vitals(self):
         self._jwt(self.patient_user)
         ts = timezone.now()
@@ -128,13 +109,7 @@ class HomeCareApiTests(APITestCase):
         self.assertEqual(res.status_code, 201, res.data)
         self.assertEqual(PatientVitalReading.objects.count(), 1)
 
-    def test_assigned_nurse_can_record_patient_vitals(self):
-        PatientCareAssignment.objects.create(
-            patient=self.patient_user,
-            doctor=self.doctor_user,
-            nurse=self.nurse_user,
-            is_active=True,
-        )
+    def test_nurse_cannot_record_other_patient_vitals(self):
         self._jwt(self.nurse_user)
         ts = timezone.now()
         res = self.client.post(
@@ -146,4 +121,4 @@ class HomeCareApiTests(APITestCase):
             },
             format="json",
         )
-        self.assertEqual(res.status_code, 201, res.data)
+        self.assertEqual(res.status_code, 403, res.data)

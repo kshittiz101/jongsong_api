@@ -5,7 +5,6 @@ from .views import (
     HomeCareMedicationViewSet,
     MedicationLogViewSet,
     MedicationReportViewSet,
-    PatientCareAssignmentViewSet,
     PatientVitalReadingViewSet,
 )
 
@@ -29,11 +28,6 @@ router.register(
     "admin/home-care/medication-reports",
     MedicationReportViewSet,
     basename="homecare-medication-report",
-)
-router.register(
-    "admin/home-care/care-assignments",
-    PatientCareAssignmentViewSet,
-    basename="homecare-care-assignment",
 )
 
 urlpatterns = [

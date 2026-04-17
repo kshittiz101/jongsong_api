@@ -11,17 +11,15 @@ def _is_platform_admin(user):
 
 class PatientProfilePermission(BasePermission):
     """
-    list/create: admin (or superuser) only.
+    list/create/destroy: admin (or superuser) only.
     retrieve/update/partial_update: admin or owning patient user.
     """
 
     def has_permission(self, request, view):
         if not request.user or not request.user.is_authenticated:
             return False
-        if getattr(view, "action", None) == "me":
-            return True
         action = getattr(view, "action", None)
-        if action in ("list", "create"):
+        if action in ("list", "create", "destroy"):
             return _is_platform_admin(request.user)
         return True
 

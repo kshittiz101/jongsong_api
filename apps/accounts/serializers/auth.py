@@ -222,6 +222,14 @@ class PublicUserCreateSerializer(serializers.ModelSerializer):
         return user
 
 
+class DashboardUserUpdateSerializer(serializers.ModelSerializer):
+    """PATCH fields supported by jongsong-ui user management (minimal)."""
+
+    class Meta:
+        model = CustomUser
+        fields = ["first_name", "last_name", "email", "phone_number", "is_active"]
+
+
 def serialize_auth_user(user, request=None):
     """
     Shape matches the frontend `UserProfile` type (role/avatar from linked profile).
@@ -251,7 +259,7 @@ def serialize_auth_user(user, request=None):
 
     display_name = user.get_full_name() or user.email or user.username
 
-    return {
+    out = {
         "id": user.id,
         "username": user.username,
         "phone": user.phone_number,
@@ -270,6 +278,16 @@ def serialize_auth_user(user, request=None):
             "avatar_url": avatar_url or "",
         },
     }
+    pp = getattr(user, "patient_profile", None)
+    if pp is not None:
+        from .patient import PatientProfileSerializer
+
+        out["patient_profile"] = PatientProfileSerializer(
+            pp, context={"request": request}
+        ).data
+    else:
+        out["patient_profile"] = None
+    return out
 
 
 class LoginTokenObtainPairSerializer(TokenObtainPairSerializer):

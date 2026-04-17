@@ -13,7 +13,6 @@ from .models import (
     Medication,
     MedicationLog,
     MedicationReport,
-    PatientCareAssignment,
     PatientVitalReading,
 )
 
@@ -83,14 +82,3 @@ def get_medication_reports_queryset(user) -> QuerySet:
     qs = MedicationReport.objects.select_related("patient", "recorded_by")
     qs = filter_by_visible_patients(qs, user, "patient_id")
     return qs
-
-
-def get_care_assignments_queryset(user) -> QuerySet:
-    from django.db.models import Q
-
-    qs = PatientCareAssignment.objects.select_related("patient", "doctor", "nurse")
-    if is_homecare_admin(user):
-        return qs
-    return qs.filter(
-        Q(patient_id=user.id) | Q(doctor_id=user.id) | Q(nurse_id=user.id)
-    )
