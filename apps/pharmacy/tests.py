@@ -45,7 +45,7 @@ class PrescriptionAPITests(APITestCase):
         )
         self.staff_profile = StaffProfile.objects.create(
             user=self.staff_user,
-            role=Role.STAFF,
+            role=Role.PHARMACY_STAFF,
             designation=self.other_designation,
         )
 
@@ -58,7 +58,7 @@ class PrescriptionAPITests(APITestCase):
         )
         self.pharmacist_profile = StaffProfile.objects.create(
             user=self.pharmacist_user,
-            role=Role.STAFF,
+            role=Role.PHARMACY_STAFF,
             designation=self.pharmacist_designation,
         )
 

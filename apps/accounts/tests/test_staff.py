@@ -47,7 +47,7 @@ class StaffManagementApiTests(APITestCase):
         )
         self.staff_profile = StaffProfile.objects.create(
             user=self.staff_user,
-            role=Role.STAFF,
+            role=Role.PHARMACY_STAFF,
             designation=self.other_designation,
         )
 
@@ -184,7 +184,7 @@ class StaffManagementApiTests(APITestCase):
     # ─────────────────────────────────────────────────────────────────────────────
 
     def test_superuser_can_create_staff_user(self):
-        """Superuser can create a staff user via POST and StaffProfile is created with role=STAFF."""
+        """Superuser can create a staff user via POST and StaffProfile is created with role=PHARMACY_STAFF."""
         self._auth_as_superuser()
 
         res = self.client.post(
@@ -210,7 +210,7 @@ class StaffManagementApiTests(APITestCase):
         # Verify StaffProfile exists with correct role
         self.assertTrue(StaffProfile.objects.filter(user=user).exists())
         staff_profile = StaffProfile.objects.get(user=user)
-        self.assertEqual(staff_profile.role, Role.STAFF)
+        self.assertEqual(staff_profile.role, Role.PHARMACY_STAFF)
 
     def test_admin_with_admin_profile_can_create_staff_user(self):
         """Admin user (has AdminProfile) can create a staff user."""
@@ -263,7 +263,7 @@ class StaffManagementApiTests(APITestCase):
         )
         StaffProfile.objects.create(
             user=another_staff,
-            role=Role.STAFF,
+            role=Role.PHARMACY_STAFF,
             designation=self.other_designation,
         )
 
@@ -291,7 +291,7 @@ class StaffManagementApiTests(APITestCase):
         )
         StaffProfile.objects.create(
             user=inactive_staff,
-            role=Role.STAFF,
+            role=Role.PHARMACY_STAFF,
             designation=self.other_designation,
         )
 

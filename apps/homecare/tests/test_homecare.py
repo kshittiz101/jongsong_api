@@ -64,9 +64,9 @@ class HomeCareApiTests(APITestCase):
         )
         PublicUserProfile.objects.create(
             user=self.nurse_user,
-            role=Role.STAFF,
+            role=Role.CUSTOMER,
         )
-        StaffProfile.objects.create(user=self.nurse_user, role=Role.STAFF)
+        StaffProfile.objects.create(user=self.nurse_user, role=Role.HOME_CARE_STAFF)
         self.doctor_user = User.objects.create_user(
             email="doctor@example.com",
             phone_number="9801000005",
@@ -74,9 +74,9 @@ class HomeCareApiTests(APITestCase):
         )
         PublicUserProfile.objects.create(
             user=self.doctor_user,
-            role=Role.STAFF,
+            role=Role.CUSTOMER,
         )
-        StaffProfile.objects.create(user=self.doctor_user, role=Role.STAFF)
+        StaffProfile.objects.create(user=self.doctor_user, role=Role.HOME_CARE_STAFF)
 
     def _jwt(self, user):
         passwords = {
@@ -200,8 +200,8 @@ class HomeCarePatientPortalApiTests(APITestCase):
             phone_number="9802000006",
             password="NursePass123!@#",
         )
-        PublicUserProfile.objects.create(user=self.nurse_user, role=Role.STAFF)
-        StaffProfile.objects.create(user=self.nurse_user, role=Role.STAFF)
+        PublicUserProfile.objects.create(user=self.nurse_user, role=Role.CUSTOMER)
+        StaffProfile.objects.create(user=self.nurse_user, role=Role.HOME_CARE_STAFF)
 
     def _jwt(self, user):
         passwords = {

@@ -33,7 +33,9 @@ def _user_list_queryset(role_param: str | None):
     if r in ("PUBLIC", "CUSTOMER"):
         return qs.filter(publicuserprofile__role=Role.CUSTOMER)
     if r == "PATIENT":
-        return qs.filter(publicuserprofile__role=Role.PATIENT)
+        return qs.filter(
+            publicuserprofile__role__in=[Role.PATIENT, Role.HOME_CARE_PATIENT]
+        )
     return qs
 
 

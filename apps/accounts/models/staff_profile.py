@@ -16,7 +16,7 @@ class StaffProfile(models.Model):
         CustomUser, on_delete=models.CASCADE, related_name="staff_profile"
     )
     role = models.CharField(
-        max_length=100, choices=Role.choices, default=Role.STAFF
+        max_length=100, choices=Role.choices, default=Role.PHARMACY_STAFF
     )
     designation = models.ForeignKey(
         Designation,

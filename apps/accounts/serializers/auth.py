@@ -147,7 +147,7 @@ class StaffCreateSerializer(serializers.ModelSerializer):
         )
         StaffProfile.objects.create(
             user=user,
-            role=Role.STAFF,
+            role=Role.PHARMACY_STAFF,
             designation=designation,
         )
         return user

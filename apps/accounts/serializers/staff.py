@@ -114,7 +114,7 @@ class StaffAdminCreateSerializer(serializers.ModelSerializer):
         validators=[UniqueValidator(queryset=User.objects.all())]
     )
     role = serializers.ChoiceField(
-        choices=Role.choices, required=False, default=Role.STAFF
+        choices=Role.choices, required=False, default=Role.PHARMACY_STAFF
     )
     profile_picture = serializers.ImageField(required=False, allow_null=True)
     citizenship_image = serializers.ImageField(required=False, allow_null=True)
@@ -179,7 +179,7 @@ class StaffAdminCreateSerializer(serializers.ModelSerializer):
             if key in validated_data:
                 profile_data[key] = validated_data.pop(key)
         if "role" not in profile_data:
-            profile_data["role"] = Role.STAFF
+            profile_data["role"] = Role.PHARMACY_STAFF
 
         user = User.objects.create_user(
             password=password,
