@@ -3,12 +3,18 @@ from rest_framework.routers import SimpleRouter
 
 from .views import (
     HomeCareMedicationViewSet,
+    HomeCarePatientViewSet,
     MedicationLogViewSet,
     MedicationReportViewSet,
     PatientVitalReadingViewSet,
 )
 
 router = SimpleRouter()
+router.register(
+    "admin/home-care/patients",
+    HomeCarePatientViewSet,
+    basename="homecare-patient",
+)
 router.register(
     "admin/home-care/vitals",
     PatientVitalReadingViewSet,
