@@ -13,6 +13,7 @@ from .models import (
     Medication,
     MedicationLog,
     MedicationReport,
+    PatientCaretakerAssignment,
     PatientDailyClinicalReport,
     PatientVitalReading,
 )
@@ -85,3 +86,10 @@ def get_daily_clinical_reports_queryset(user) -> QuerySet:
     qs = PatientDailyClinicalReport.objects.select_related("patient")
     qs = filter_by_visible_patients(qs, user, "patient_id")
     return qs
+
+
+def get_caretaker_assignments_queryset(user) -> QuerySet:
+    qs = PatientCaretakerAssignment.objects.select_related(
+        "patient", "caretaker", "assigned_by"
+    )
+    return filter_by_visible_patients(qs, user, "patient_id")

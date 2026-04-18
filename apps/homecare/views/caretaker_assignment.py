@@ -1,11 +1,12 @@
 from drf_spectacular.utils import extend_schema_view
 from rest_framework import viewsets
 from rest_framework.filters import OrderingFilter
-from rest_framework.permissions import IsAuthenticated
 
-from common.permissions import IsAdminOrSuperUser
-
-from ..models import PatientCaretakerAssignment
+from ..permissions import HomeCareClinicalPermission
+from ..selectors import (
+    filter_by_optional_patient_param,
+    get_caretaker_assignments_queryset,
+)
 from ..serializers import PatientCaretakerAssignmentSerializer
 
 from .schema import HOMECARE_ASSIGNMENT_SCHEMA
@@ -14,25 +15,23 @@ from .schema import HOMECARE_ASSIGNMENT_SCHEMA
 @extend_schema_view(**HOMECARE_ASSIGNMENT_SCHEMA)
 class PatientCaretakerAssignmentViewSet(viewsets.ModelViewSet):
     """
-    Platform-admin-only API for assigning home-care staff to patients.
+    Home-care caretaker ↔ patient assignments.
+
+    Platform admins see all rows; patients and assigned home-care staff only
+    see assignments for patients they are allowed to view (see
+    ``homecare_visible_patient_ids``).
     """
 
-    permission_classes = [IsAuthenticated, IsAdminOrSuperUser]
+    permission_classes = [HomeCareClinicalPermission]
     serializer_class = PatientCaretakerAssignmentSerializer
     filter_backends = [OrderingFilter]
     ordering_fields = ("assigned_at", "id")
     ordering = ("-assigned_at",)
 
     def get_queryset(self):
-        qs = PatientCaretakerAssignment.objects.select_related(
-            "patient", "caretaker", "assigned_by"
-        )
-        pid = self.request.query_params.get("patient")
-        if pid is not None:
-            try:
-                qs = qs.filter(patient_id=int(pid))
-            except (TypeError, ValueError):
-                return qs.none()
+        user = self.request.user
+        qs = get_caretaker_assignments_queryset(user)
+        qs = filter_by_optional_patient_param(qs, self.request, user, "patient_id")
         cid = self.request.query_params.get("caretaker")
         if cid is not None:
             try:
