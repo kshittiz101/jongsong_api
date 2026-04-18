@@ -2,8 +2,8 @@ from rest_framework import serializers
 
 from apps.accounts.serializers import PatientUserBriefSerializer
 
-from ..access import can_manage_homecare_patient
 from ..models import Medication, MedicationLog
+from .patient_scope import require_homecare_patient_actor
 
 
 class MedicationSerializer(serializers.ModelSerializer):
@@ -31,18 +31,8 @@ class MedicationSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["id", "created_at", "updated_at", "patient_detail"]
 
-    def _validate_patient_user(self, patient_user):
-        request = self.context.get("request")
-        if not request or not request.user.is_authenticated:
-            raise serializers.ValidationError("Authentication required.")
-        if not can_manage_homecare_patient(request.user, patient_user):
-            raise serializers.ValidationError(
-                "You are not allowed to manage data for this patient."
-            )
-        return patient_user
-
     def validate_patient(self, value):
-        return self._validate_patient_user(value)
+        return require_homecare_patient_actor(self.context.get("request"), value)
 
 
 class MedicationLogSerializer(serializers.ModelSerializer):
@@ -61,14 +51,13 @@ class MedicationLogSerializer(serializers.ModelSerializer):
 
     def validate_medication(self, med: Medication):
         request = self.context.get("request")
-        if not request or not request.user.is_authenticated:
-            raise serializers.ValidationError("Authentication required.")
         if med is None:
             raise serializers.ValidationError("Medication is required.")
-        if not can_manage_homecare_patient(request.user, med.patient):
-            raise serializers.ValidationError(
-                "You are not allowed to log doses for this medication."
-            )
+        require_homecare_patient_actor(
+            request,
+            med.patient,
+            denied_message="You are not allowed to log doses for this medication.",
+        )
         return med
 
     def create(self, validated_data):

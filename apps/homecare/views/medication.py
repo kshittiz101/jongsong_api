@@ -1,4 +1,4 @@
-from drf_spectacular.utils import extend_schema, extend_schema_view
+from drf_spectacular.utils import extend_schema_view
 from rest_framework import viewsets
 from rest_framework.filters import OrderingFilter
 
@@ -10,11 +10,10 @@ from ..selectors import (
 )
 from ..serializers import MedicationLogSerializer, MedicationSerializer
 
-_TAG = ["home care"]
-_ACTIONS = ("list", "retrieve", "create", "update", "partial_update", "destroy")
+from .schema import HOMECARE_CLINICAL_SCHEMA
 
 
-@extend_schema_view(**{a: extend_schema(tags=_TAG) for a in _ACTIONS})
+@extend_schema_view(**HOMECARE_CLINICAL_SCHEMA)
 class HomeCareMedicationViewSet(viewsets.ModelViewSet):
     permission_classes = [HomeCareClinicalPermission]
     serializer_class = MedicationSerializer
@@ -28,7 +27,7 @@ class HomeCareMedicationViewSet(viewsets.ModelViewSet):
         return filter_by_optional_patient_param(qs, self.request, user, "patient_id")
 
 
-@extend_schema_view(**{a: extend_schema(tags=_TAG) for a in _ACTIONS})
+@extend_schema_view(**HOMECARE_CLINICAL_SCHEMA)
 class MedicationLogViewSet(viewsets.ModelViewSet):
     permission_classes = [HomeCareClinicalPermission]
     serializer_class = MedicationLogSerializer

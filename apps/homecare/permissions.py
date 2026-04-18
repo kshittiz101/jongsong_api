@@ -1,27 +1,19 @@
-from rest_framework.permissions import BasePermission
+from rest_framework.permissions import SAFE_METHODS, BasePermission
 
-from .access import can_manage_homecare_patient
-
-
-def _is_platform_admin(user):
-    return bool(
-        user
-        and user.is_authenticated
-        and (user.is_superuser or hasattr(user, "admin_profile"))
-    )
+from .access import can_edit_homecare_patient, can_view_homecare_patient, is_homecare_admin
 
 
 class HomeCareClinicalPermission(BasePermission):
     """
-    Authenticated users only. Object access if platform admin or the patient
-    managing their own home-care clinical data.
+    Authenticated users only. Safe methods allowed if the user can view the
+    patient; unsafe methods require edit rights (admin or assigned caretaker).
     """
 
     def has_permission(self, request, view):
         return bool(request.user and request.user.is_authenticated)
 
     def has_object_permission(self, request, view, obj):
-        if _is_platform_admin(request.user):
+        if is_homecare_admin(request.user):
             return True
         patient_user = getattr(obj, "patient", None)
         if patient_user is None and hasattr(obj, "medication"):
@@ -29,4 +21,6 @@ class HomeCareClinicalPermission(BasePermission):
             patient_user = getattr(med, "patient", None) if med else None
         if patient_user is None:
             return False
-        return can_manage_homecare_patient(request.user, patient_user)
+        if request.method in SAFE_METHODS:
+            return can_view_homecare_patient(request.user, patient_user)
+        return can_edit_homecare_patient(request.user, patient_user)

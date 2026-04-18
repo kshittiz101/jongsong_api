@@ -4,6 +4,7 @@ from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
 from rest_framework.response import Response
 
+from common.constants.roles import Role
 from common.permissions import IsAdminOrSuperUser
 from drf_spectacular.utils import extend_schema
 
@@ -36,14 +37,21 @@ class StaffManagementViewSet(viewsets.ModelViewSet):
             .prefetch_related("staff_profile")
         )
         is_active = self.request.query_params.get("is_active")
-        if is_active is None:
-            return qs
+        if is_active is not None:
+            value = str(is_active).strip().lower()
+            if value in {"true", "1", "yes"}:
+                qs = qs.filter(is_active=True)
+            elif value in {"false", "0", "no"}:
+                qs = qs.filter(is_active=False)
 
-        value = str(is_active).strip().lower()
-        if value in {"true", "1", "yes"}:
-            return qs.filter(is_active=True)
-        if value in {"false", "0", "no"}:
-            return qs.filter(is_active=False)
+        role = self.request.query_params.get("role")
+        if role is not None:
+            role_key = str(role).strip()
+            allowed = {choice.value for choice in Role}
+            if role_key not in allowed:
+                return qs.none()
+            qs = qs.filter(staff_profile__role=role_key)
+
         return qs
 
     def get_serializer_class(self):

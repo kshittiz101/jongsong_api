@@ -9,6 +9,7 @@ from .auth import (
 )
 from .patient import (
     PatientProfileAdminCreateSerializer,
+    PatientProfileAdminPatchSerializer,
     PatientProfileSerializer,
     PatientUserBriefSerializer,
     PatientUserOnboardingSerializer,
@@ -26,6 +27,7 @@ __all__ = [
     "DesignationSerializer",
     "LoginTokenObtainPairSerializer",
     "PatientProfileAdminCreateSerializer",
+    "PatientProfileAdminPatchSerializer",
     "PatientProfileSerializer",
     "PatientUserBriefSerializer",
     "PatientUserOnboardingSerializer",

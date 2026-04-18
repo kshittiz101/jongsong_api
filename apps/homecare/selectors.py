@@ -13,6 +13,7 @@ from .models import (
     Medication,
     MedicationLog,
     MedicationReport,
+    PatientDailyClinicalReport,
     PatientVitalReading,
 )
 
@@ -65,20 +66,22 @@ def get_medications_queryset(user) -> QuerySet:
 
 
 def get_medication_logs_queryset(user) -> QuerySet:
-    return (
-        MedicationLog.objects
-        .select_related("medication", "medication__patient", "marked_by")
-        .filter(
-            **{"medication__patient_id__in": homecare_visible_patient_ids(user)}
-        )
-        if homecare_visible_patient_ids(user) is not None
-        else MedicationLog.objects.select_related(
-            "medication", "medication__patient", "marked_by"
-        )
+    qs = MedicationLog.objects.select_related(
+        "medication", "medication__patient", "marked_by"
     )
+    visible = homecare_visible_patient_ids(user)
+    if visible is not None:
+        qs = qs.filter(medication__patient_id__in=visible)
+    return qs
 
 
 def get_medication_reports_queryset(user) -> QuerySet:
     qs = MedicationReport.objects.select_related("patient", "recorded_by")
+    qs = filter_by_visible_patients(qs, user, "patient_id")
+    return qs
+
+
+def get_daily_clinical_reports_queryset(user) -> QuerySet:
+    qs = PatientDailyClinicalReport.objects.select_related("patient")
     qs = filter_by_visible_patients(qs, user, "patient_id")
     return qs

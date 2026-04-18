@@ -1,10 +1,9 @@
 from rest_framework import serializers
-from rest_framework.exceptions import PermissionDenied
 
 from apps.accounts.serializers import PatientUserBriefSerializer
 
-from ..access import can_manage_homecare_patient
 from ..models import PatientVitalReading
+from .patient_scope import require_homecare_patient_actor
 
 
 class PatientVitalReadingSerializer(serializers.ModelSerializer):
@@ -32,18 +31,8 @@ class PatientVitalReadingSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ["id", "recorded_by", "created_at", "patient_detail"]
 
-    def _validate_patient_user(self, patient_user):
-        request = self.context.get("request")
-        if not request or not request.user.is_authenticated:
-            raise serializers.ValidationError("Authentication required.")
-        if not can_manage_homecare_patient(request.user, patient_user):
-            raise PermissionDenied(
-                "You are not allowed to manage data for this patient."
-            )
-        return patient_user
-
     def validate_patient(self, value):
-        return self._validate_patient_user(value)
+        return require_homecare_patient_actor(self.context.get("request"), value)
 
     def create(self, validated_data):
         request = self.context.get("request")

@@ -308,6 +308,43 @@ class StaffManagementApiTests(APITestCase):
         for result in res.data["results"]:
             self.assertFalse(result["is_active"])
 
+    def test_list_role_filter_home_care_staff(self):
+        """List supports ?role=home_care_staff to restrict to that staff profile role."""
+        self._auth_as_superuser()
+
+        hc_user = User.objects.create_user(
+            email="hcstaffonly@example.com",
+            phone_number="9922222222",
+            password="StaffPass123!@#",
+            is_staff=True,
+            is_superuser=False,
+        )
+        StaffProfile.objects.create(
+            user=hc_user,
+            role=Role.HOME_CARE_STAFF,
+            designation=self.other_designation,
+        )
+
+        res = self.client.get("/api/v1/admin/staff/?role=home_care_staff")
+        self.assertEqual(res.status_code, 200, res.data)
+        ids = [r["id"] for r in res.data["results"]]
+        self.assertIn(hc_user.pk, ids)
+        self.assertNotIn(self.staff_user.pk, ids)
+
+        res_all = self.client.get("/api/v1/admin/staff/?role=pharmacy_staff")
+        self.assertEqual(res_all.status_code, 200, res.data)
+        ids_ph = [r["id"] for r in res_all.data["results"]]
+        self.assertIn(self.staff_user.pk, ids_ph)
+        self.assertNotIn(hc_user.pk, ids_ph)
+
+    def test_list_role_invalid_returns_empty(self):
+        """Unknown ?role= value yields an empty result set (strict filter)."""
+        self._auth_as_superuser()
+        res = self.client.get("/api/v1/admin/staff/?role=not_a_real_role")
+        self.assertEqual(res.status_code, 200, res.data)
+        self.assertEqual(res.data["count"], 0)
+        self.assertEqual(len(res.data["results"]), 0)
+
     # ─────────────────────────────────────────────────────────────────────────────
     # STAF-03: Retrieve works for staff user id
     # ─────────────────────────────────────────────────────────────────────────────

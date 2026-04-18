@@ -1,4 +1,4 @@
-from drf_spectacular.utils import extend_schema, extend_schema_view
+from drf_spectacular.utils import extend_schema_view
 from rest_framework import viewsets
 from rest_framework.filters import OrderingFilter
 
@@ -6,10 +6,10 @@ from ..permissions import HomeCareClinicalPermission
 from ..selectors import filter_by_optional_patient_param, get_vitals_queryset
 from ..serializers import PatientVitalReadingSerializer
 
-_TAG = ["home care"]
+from .schema import HOMECARE_CLINICAL_SCHEMA
 
 
-@extend_schema_view(**{a: extend_schema(tags=_TAG) for a in ("list", "retrieve", "create", "update", "partial_update", "destroy")})
+@extend_schema_view(**HOMECARE_CLINICAL_SCHEMA)
 class PatientVitalReadingViewSet(viewsets.ModelViewSet):
     permission_classes = [HomeCareClinicalPermission]
     serializer_class = PatientVitalReadingSerializer

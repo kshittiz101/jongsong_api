@@ -14,11 +14,20 @@ from ..models import PatientProfile
 from ..permissions import PatientProfilePermission
 from ..serializers import (
     PatientProfileAdminCreateSerializer,
+    PatientProfileAdminPatchSerializer,
     PatientProfileSerializer,
     PatientUserOnboardingSerializer,
 )
 
 _PATIENT_TAG = ["patient profiles"]
+
+
+def _is_patient_profile_admin(user) -> bool:
+    return bool(
+        user
+        and user.is_authenticated
+        and (user.is_superuser or hasattr(user, "admin_profile"))
+    )
 
 
 @extend_schema(tags=_PATIENT_TAG)
@@ -128,6 +137,29 @@ class PatientProfileViewSet(viewsets.ModelViewSet):
             status=status.HTTP_201_CREATED,
             headers=headers,
         )
+
+    def partial_update(self, request, *args, **kwargs):
+        profile = self.get_object()
+        if _is_patient_profile_admin(request.user):
+            serializer = PatientProfileAdminPatchSerializer(
+                data=request.data,
+                partial=True,
+                context={
+                    **self.get_serializer_context(),
+                    "user": profile.user,
+                    "profile": profile,
+                },
+            )
+            serializer.is_valid(raise_exception=True)
+            serializer.update(profile, serializer.validated_data)
+            profile.refresh_from_db()
+            profile.user.refresh_from_db()
+            return Response(
+                PatientProfileSerializer(
+                    profile, context=self.get_serializer_context()
+                ).data
+            )
+        return super().partial_update(request, *args, **kwargs)
 
 
 @extend_schema(tags=_PATIENT_TAG)

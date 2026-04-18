@@ -3,17 +3,18 @@ from rest_framework.routers import SimpleRouter
 
 from .views import (
     HomeCareMedicationViewSet,
-    HomeCarePatientViewSet,
     MedicationLogViewSet,
     MedicationReportViewSet,
+    PatientCaretakerAssignmentViewSet,
+    PatientDailyClinicalReportViewSet,
     PatientVitalReadingViewSet,
 )
 
 router = SimpleRouter()
 router.register(
-    "admin/home-care/patients",
-    HomeCarePatientViewSet,
-    basename="homecare-patient",
+    "admin/home-care/caretaker-assignments",
+    PatientCaretakerAssignmentViewSet,
+    basename="homecare-caretaker-assignment",
 )
 router.register(
     "admin/home-care/vitals",
@@ -34,6 +35,11 @@ router.register(
     "admin/home-care/medication-reports",
     MedicationReportViewSet,
     basename="homecare-medication-report",
+)
+router.register(
+    "admin/home-care/daily-clinical-reports",
+    PatientDailyClinicalReportViewSet,
+    basename="homecare-daily-clinical-report",
 )
 
 urlpatterns = [

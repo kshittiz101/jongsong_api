@@ -4,6 +4,7 @@ from .models import (
     Medication,
     MedicationLog,
     MedicationReport,
+    PatientDailyClinicalReport,
     PatientVitalReading,
 )
 
@@ -73,3 +74,12 @@ class MedicationReportAdmin(admin.ModelAdmin):
     list_filter = ("report_date",)
     search_fields = ("summary", "patient__email")
     date_hierarchy = "report_date"
+
+
+@admin.register(PatientDailyClinicalReport)
+class PatientDailyClinicalReportAdmin(admin.ModelAdmin):
+    list_display = ("id", "patient", "report_date", "generated_at")
+    list_filter = ("report_date",)
+    search_fields = ("patient__email", "medication_summary_text", "vitals_summary_text")
+    date_hierarchy = "report_date"
+    readonly_fields = ("generated_at",)
